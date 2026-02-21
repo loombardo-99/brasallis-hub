@@ -1,0 +1,15 @@
+
+Structure of table 'vendas':
+- id (int(11) unsigned)
+- empresa_id (int(11) unsigned)
+- user_id (int(11) unsigned)
+- total_amount (decimal(10,2))
+- payment_method (varchar(50))
+- created_at (timestamp)
+
+Structure of table 'venda_itens':
+- id (int(11) unsigned)
+- venda_id (int(11) unsigned)
+- product_id (int(11) unsigned)
+- quantity (int(11))
+- unit_price (decimal(10,2))
