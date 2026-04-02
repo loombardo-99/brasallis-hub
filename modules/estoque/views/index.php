@@ -2,11 +2,11 @@
 // modules/estoque/views/index.php
 session_start();
 require_once __DIR__ . '/../../../includes/funcoes.php';
-require_once __DIR__ . '/../../../includes/cabecalho.php';
-
 // Check Auth & Permission
 if (!isset($_SESSION['user_id'])) { header('Location: ../../../login.php'); exit; }
 if (!check_permission('estoque', 'leitura')) { header('Location: ../../../admin/painel_admin.php?error=acesso_negado'); exit; }
+
+require_once __DIR__ . '/../../../includes/cabecalho.php';
 
 $params = check_permission('estoque', 'escrita'); // Boolean for UI control
 

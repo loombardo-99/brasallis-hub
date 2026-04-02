@@ -1,231 +1,945 @@
 <?php
-// views/landing.php
+/**
+ * View: landing.php (BRASALLIS ULTRA-CLEAN)
+ * Minimalismo, Performance e Foco no Cliente.
+ */
+$hide_default_nav = true;
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<!-- AOS Animation -->
+<!-- Ultra UI Resources -->
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
 
-<!-- BACKGROUND HERO -->
-<!-- BACKGROUND HERO -->
+<!-- Ambient Animated Background -->
+<div class="ambient-bg">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+</div>
+
+<!-- NAVIGATION: FLOATING GLASS (BRASALLIS CONEXÃO) -->
+<nav class="ultra-nav">
+    <a href="#" class="ultra-logo-container">
+        <img src="/assets/img/pureza.png" alt="Brasallis Logo" class="ultra-logo" style="height: 55px; width: auto; object-fit: contain;">
+    </a>
+
+    <div class="nav-links-area">
+        <a href="#solucoes" class="nav-link-u">Soluções</a>
+        <a href="#para-voce" class="nav-link-u">Para Você</a>
+        <a href="#planos" class="nav-link-u">Preços</a>
+        <a href="/login.php" class="nav-link-u">Login</a>
+        <a href="/register.php" class="nav-cta-btn">Começar Grátis</a>
+    </div>
+
+    <!-- Mobile Hamburger Menu Button -->
+    <button class="d-lg-none mobile-menu-btn" id="mobileMenuBtn" aria-label="Abrir Menu Mobile">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+</nav>
+
 <style>
-    /* Direct application to section-hero for guaranteed visibility */
-    .section-hero {
-        background: linear-gradient(135deg, #0A2647 0%, #0F3D39 100%) !important; /* Navy to Dark Emerald */
-        position: relative;
-        overflow: hidden;
-        color: white; /* Base text color */
-        padding-top: 120px;
-        padding-bottom: 100px;
-        z-index: 1; /* Ensure distinct stacking context */
-    }
-    
-    /* LIGHT BUTTON FIX for Dark Backgrounds */
-    .btn-trust-outline-light {
-        background: transparent;
-        color: white !important;
-        border: 1px solid rgba(255,255,255, 0.4);
-        padding: 14px 28px;
-        font-family: 'Outfit', sans-serif;
-        font-weight: 600;
-        border-radius: 8px;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        display: inline-block;
-    }
-    .btn-trust-outline-light:hover {
-        background: white;
-        color: #0A2647 !important; /* Navy Text on Hover */
-        border-color: white;
+    :root {
+        --u-bg: #ffffff; 
+        --u-soft: #f8fafc;
+        --u-dark: #121212; /* Brasallis deep focus */
+        --u-brand-blue: #0070F2; /* Brasallis Primary Blue */
+        --u-wa-green: #25D366; /* Support Channel Green */
+        --u-accent: var(--u-brand-blue);
+        --u-border: rgba(0, 0, 0, 0.08); 
+        --u-text-main: #1c1c1c;
+        --u-text-dim: #6b7280;
+        --u-shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --u-shadow-md: 0 10px 30px rgba(0,0,0,0.04);
+        --section-pad: 180px; 
     }
 
-    /* Radial Overlay for depth - using pseudo-element on the section itself */
-<!-- [Preserved Lines logic handled by strict replacement, assuming context match] -->
-<div class="bg-hero-gradient"></div>
-
-<!-- HERO SECTION: Layered Depth -->
-<section class="section-hero position-relative">
-    <!-- bg-pattern removed for clean gradient -->
-    <div class="container position-relative z-2">
-        <div class="row align-items-center gy-5">
-            <!-- Content -->
-            <div class="col-lg-5" data-aos="fade-right">
-                <span class="d-inline-block py-1 px-3 rounded-pill bg-light border border-secondary border-opacity-25 text-secondary fw-bold small mb-4">
-
-    .section-hero::before {
-        content: '';
-        position: absolute;
+    /* Brasallis Hub Style Fixed Header */
+    .ultra-nav {
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
-        background-image: 
-            radial-gradient(circle at 10% 20%, rgba(44, 120, 101, 0.2) 0%, transparent 40%),
-            radial-gradient(circle at 90% 80%, rgba(10, 38, 71, 0.4) 0%, transparent 40%);
-        pointer-events: none;
-        z-index: -1; /* Behind content */
+        height: 80px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-bottom: 1px solid var(--u-border);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 8%;
+        transition: all 0.3s ease;
     }
 
-    /* Force text colors to white for contrast */
-    .section-hero .lead {
-        color: rgba(255,255,255, 0.9) !important;
+    .ultra-logo-container {
+        display: flex;
+        align-items: center;
+        height: 100%;
     }
-    .section-hero h1, .section-hero h2, .section-hero h3 {
-        color: #ffffff !important;
+
+    .ultra-logo {
+        height: 40px;
+        width: auto;
+        display: block;
+    }
+
+    .nav-links-area {
+        display: flex;
+        gap: 40px;
+        align-items: center;
+    }
+
+    .nav-link-u {
+        text-decoration: none !important;
+        color: var(--u-text-main) !important;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: color 0.2s ease;
+    }
+
+    .nav-link-u:hover {
+        color: var(--u-brand-blue) !important;
+    }
+
+    .nav-cta-btn {
+        background: var(--u-brand-blue);
+        color: #fff !important;
+        padding: 12px 28px;
+        border-radius: 8px; /* Brasallis proprietary style */
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+        text-decoration: none !important;
+    }
+
+    .nav-cta-btn:hover {
+        background: #003080;
+        transform: translateY(-1px);
+    }
+
+    /* Mobile Menu styles */
+    .mobile-menu-btn {
+        background: transparent;
+        border: none;
+        width: 32px;
+        height: 24px;
+        position: relative;
+        cursor: pointer;
+        z-index: 2005;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .mobile-menu-btn span {
+        display: block;
+        width: 100%;
+        height: 2px;
+        background: var(--u-dark);
+        border-radius: 2px;
+        transition: all 0.3s ease;
+        transform-origin: left center;
+    }
+    .mobile-menu-btn.active span:nth-child(1) { transform: rotate(45deg); width: 26px; top: -2px; position: relative; }
+    .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+    .mobile-menu-btn.active span:nth-child(3) { transform: rotate(-45deg); width: 26px; top: 2px; position: relative; }
+
+    @media (max-width: 991px) {
+        .ultra-nav { width: 100%; padding: 0 20px; border-bottom: none; }
+        .nav-links-area {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(250, 250, 250, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 2001;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 35px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            margin: 0;
+            padding: 0;
+        }
+        .nav-links-area.mobile-active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .nav-link-u, .nav-cta-btn {
+            font-size: 2rem;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(25px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-links-area.mobile-active .nav-link-u,
+        .nav-links-area.mobile-active .nav-cta-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .nav-cta-btn {
+            font-size: 1.25rem;
+            padding: 16px 42px;
+            margin-top: 10px;
+        }
+        /* Staggered Animation Delays */
+        .nav-links-area.mobile-active .nav-link-u:nth-child(1) { transition-delay: 0.10s; }
+        .nav-links-area.mobile-active .nav-link-u:nth-child(2) { transition-delay: 0.15s; }
+        .nav-links-area.mobile-active .nav-link-u:nth-child(3) { transition-delay: 0.20s; }
+        .nav-links-area.mobile-active .nav-link-u:nth-child(4) { transition-delay: 0.25s; }
+        .nav-links-area.mobile-active .nav-cta-btn { transition-delay: 0.30s; }
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: transparent; /* Changed to transparent so ambient-bg shows */
+        color: var(--u-text-main);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    /* Google/Stripe Style Animated Floating Orbs */
+    .ambient-bg {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: -1;
+        overflow: hidden;
+        background-color: var(--u-bg);
+        pointer-events: none;
     }
     
-    /* Mockup Shadow */
-    .mockup-container {
-        box-shadow: 0 20px 50px rgba(0,0,0,0.4) !important;
+    .ambient-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.5;
+        animation: floatOrb 20s infinite alternate ease-in-out;
+    }
+
+    .orb-1 {
+        width: 600px; height: 600px;
+        background: rgba(0, 64, 176, 0.08);
+        top: -200px; left: -200px;
+        animation-duration: 25s;
+    }
+    
+    .orb-2 {
+        width: 500px; height: 500px;
+        background: rgba(37, 211, 102, 0.06);
+        bottom: -100px; right: -100px;
+        animation-duration: 28s;
+        animation-delay: -5s;
+    }
+
+    .orb-3 {
+        width: 400px; height: 400px;
+        background: rgba(66, 133, 244, 0.05);
+        top: 40%; left: 30%;
+        animation-duration: 22s;
+        animation-delay: -10s;
+    }
+
+    @keyframes floatOrb {
+        0% { transform: translate(0, 0) scale(1); }
+        50% { transform: translate(50px, -50px) scale(1.1); }
+        100% { transform: translate(-30px, 30px) scale(0.95); }
+    }
+    
+    /* Modern Glass Effect on Light */
+    .glass-light {
+        background: var(--u-glass-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--u-glass-border);
+    }
+
+    /* Brasallis Tint Synergy - Subtle Brand Backgrounds */
+    .u-tint-green {
+        background: rgba(16, 185, 129, 0.06);
+        border: 1px solid rgba(16, 185, 129, 0.08);
+        border-radius: 32px;
+        position: relative;
+    }
+
+    .u-tint-dark {
+        background: var(--u-dark);
+        color: #fff;
+        border-radius: 32px;
+        box-shadow: 0 40px 100px -20px rgba(15, 23, 42, 0.4);
+    }
+
+    h1, h2, h3, .u-title { font-family: 'Outfit', sans-serif; letter-spacing: -0.03em; }
+
+    .sec-ultra { padding: var(--section-pad) 0; }
+
+    /* Solutions Grid (Brasallis Hub Card Architecture) */
+    .solutions-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+        margin-top: 60px;
+    }
+
+    .u-card-clean {
+        background: #fff;
+        border: 1px solid var(--u-border);
+        border-radius: 16px;
+        padding: 48px 40px;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        box-shadow: var(--u-shadow-sm);
+        text-align: center;
+        align-items: center;
+    }
+    
+    .u-card-clean:hover {
+        border-color: var(--u-wa-green);
+        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-8px);
+    }
+
+    .u-card-icon {
+        width: 64px;
+        height: 64px;
+        background: var(--u-soft);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        color: var(--u-brand-blue);
+        margin-bottom: 8px;
+    }
+
+    .u-icon-anim {
+        width: 32px;
+        height: 32px;
+        transition: all 0.5s ease;
+    }
+
+    .u-card-clean:hover .u-icon-anim {
+        transform: scale(1.15);
+        color: var(--u-wa-green) !important;
+    }
+
+    .u-icon-anim path, .u-icon-anim circle, .u-icon-anim line, .u-icon-anim polyline {
+        stroke-dasharray: 100;
+        stroke-dashoffset: 0;
+        transition: stroke-dashoffset 1s ease-in-out;
+    }
+
+    .u-card-clean:hover .u-icon-anim path,
+    .u-card-clean:hover .u-icon-anim circle,
+    .u-card-clean:hover .u-icon-anim line,
+    .u-card-clean:hover .u-icon-anim polyline {
+        animation: drawIcon 1.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes drawIcon {
+        0% { stroke-dashoffset: 100; opacity: 0; }
+        30% { opacity: 1; }
+        100% { stroke-dashoffset: 0; opacity: 1; }
+    }
+
+    .u-card-title { font-size: 1.5rem; font-weight: 800; color: var(--u-dark); margin: 0; }
+    .u-card-desc { font-size: 1rem; color: var(--u-text-dim); line-height: 1.7; margin: 0; }
+
+    @media (max-width: 991px) {
+        .solutions-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Centered Hero Architecture (Brasallis Hub) */
+    .hero-ultra-clean {
+        padding: 160px 0 100px;
+        background: #fff;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-tag {
+        display: inline-block;
+        padding: 8px 16px;
+        background: var(--u-soft);
+        color: var(--u-brand-blue);
+        border-radius: 100px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 24px;
+    }
+
+    .hero-h1-clean {
+        font-size: clamp(2.5rem, 8vw, 4.5rem);
+        font-weight: 900;
+        color: var(--u-dark);
+        line-height: 1.1;
+        letter-spacing: -0.04em;
+        margin-bottom: 24px;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-p-clean {
+        font-size: 1.25rem;
+        color: var(--u-text-dim);
+        line-height: 1.6;
+        max-width: 700px;
+        margin: 0 auto 48px;
+    }
+
+    .hero-mockup-wrap {
+        margin-top: 80px;
+        position: relative;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .mockup-img-clean {
+        width: 100%;
+        height: auto;
+        border-radius: 16px;
+        border: 1px solid var(--u-border);
+        box-shadow: 0 50px 100px -20px rgba(0,0,0,0.15);
+    }
+
+    /* Layout Breathing */
+    .sec-ultra { padding: 120px 0; }
+
+    /* Pricing Section (Ultra-Clean) */
+    .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+        margin-top: 60px;
+    }
+
+    .pricing-card {
+        background: #fff;
+        border: 1px solid var(--u-border);
+        border-radius: 24px;
+        padding: 50px 40px;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pricing-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.1);
+        border-color: var(--u-brand-blue);
+    }
+
+    .pricing-card.featured {
+        border-color: var(--u-wa-green);
+        background: #fff;
+    }
+
+    .trial-badge {
+        display: inline-block;
+        padding: 6px 14px;
+        background: var(--u-soft);
+        color: var(--u-dark);
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-bottom: 24px;
+        border: 1px solid var(--u-border);
+    }
+
+    .price-value {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--u-dark);
+        letter-spacing: -2px;
+    }
+
+    .price-period {
+        font-size: 1rem;
+        color: var(--u-text-dim);
+        font-weight: 600;
+    }
+
+    .benefits-list {
+        margin: 40px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .benefit-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--u-text-main);
+        font-size: 0.95rem;
+    }
+
+    .benefit-item i {
+        color: var(--u-wa-green);
+        font-size: 0.85rem;
+    }
+
+    .btn-u-outline {
+        border: 2px solid var(--u-dark);
+        color: var(--u-dark);
+        padding: 16px;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-u-outline:hover {
+        background: var(--u-dark);
+        color: #fff;
+    }
+
+    .btn-u-black {
+        background: var(--u-dark);
+        color: #fff;
+        padding: 16px;
+        text-align: center;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .btn-u-black:hover {
+        opacity: 0.9;
+        transform: scale(0.98);
+    }
+
+    /* --- VIDEO HUB & NEWSLETTER (BRASALLIS ENGAGEMENT) --- */
+    .u-video-card {
+        background: var(--u-surface);
+        border: 1px solid var(--u-border);
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .u-video-card:hover {
+        border-color: var(--u-brand-blue);
+        transform: translateY(-5px);
+    }
+
+    .u-video-thumb {
+        width: 100%;
+        height: 200px;
+        background: #1a1a1a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .u-play-overlay {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.8;
+        transition: opacity 0.3s;
+    }
+
+    .u-video-card:hover .u-play-overlay {
+        opacity: 1;
+        background: rgba(0, 112, 242, 0.2);
+    }
+
+    .u-play-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--u-brand-blue);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        padding-left: 4px;
+        box-shadow: 0 0 20px rgba(0, 112, 242, 0.4);
+    }
+
+    .newsletter-hub {
+        background: radial-gradient(circle at top right, rgba(0, 112, 242, 0.05), transparent 70%);
+        border: 1px solid var(--u-border);
+        border-radius: 32px;
+        padding: 80px 40px;
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    .newsletter-input-group {
+        max-width: 500px;
+        margin: 0 auto;
+        position: relative;
+    }
+
+    .u-input-premium {
+        background: #fff;
+        border: 2px solid var(--u-border);
+        border-radius: 12px;
+        padding: 18px 24px;
+        width: 100%;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .u-input-premium:focus {
+        outline: none;
+        border-color: var(--u-brand-blue);
+        box-shadow: 0 0 0 4px rgba(0, 112, 242, 0.1);
+    }
+
+    .u-btn-subscribe {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        bottom: 8px;
+        background: var(--u-dark);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0 24px;
+        font-weight: 700;
+        transition: all 0.2s;
+    }
+
+    .u-btn-subscribe:hover {
+        background: var(--u-brand-blue);
+    }
+
+    /* --- SECTION: HERO ULTRA-CLEAN --- */
+    .hero-ultra-clean {
+        padding: 160px 0 100px;
+        background: var(--u-soft);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-h1-clean {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 900;
+        font-size: 4rem;
+        color: var(--u-dark);
+        line-height: 1.1;
+        margin-bottom: 25px;
+    }
+
+    .hero-p-clean {
+        font-size: 1.25rem;
+        color: var(--u-text-dim);
+        max-width: 700px;
+        margin: 0 auto 40px;
+        line-height: 1.6;
+    }
+
+    .hero-tag {
+        display: inline-block;
+        background: var(--u-brand-blue);
+        color: #fff;
+        padding: 6px 16px;
+        border-radius: 30px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+    }
+
+    .mockup-img-clean {
+        width: 100%;
+        max-width: 1100px;
+        border-radius: 20px;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.12);
+        border: 1px solid var(--u-border);
+    }
+
+    @media (max-width: 991px) {
+        .hero-h1-clean { font-size: 2.5rem; }
+        .pricing-grid { grid-template-columns: 1fr; }
     }
 </style>
 
-<!-- HERO SECTION: Layered Depth -->
-<section class="section-hero position-relative">
-    <!-- bg-pattern removed for clean gradient -->
-    <div class="container position-relative z-2">
-        <div class="row align-items-center gy-5">
-            <!-- Content -->
-            <div class="col-lg-5" data-aos="fade-right">
-                <span class="d-inline-block py-1 px-3 rounded-pill bg-light border border-secondary border-opacity-25 text-secondary fw-bold small mb-4">
-                    <i class="fas fa-check-circle text-success me-2"></i> ERP Homologado
-                </span>
-                
-                <h1 class="display-4 fw-bold mb-4 lh-sm">
-                    A inteligência que seu varejo precisa para <span style="color: var(--sys-emerald);">lucrar mais.</span>
-                </h1>
-                
-                <p class="lead mb-5">
-                    Deixe a complexidade fiscal com a gente. O WiseFlow automatiza estoque, vendas e impostos para você focar em crescer.
-                </p>
-                
-                <div class="d-flex flex-column flex-sm-row gap-3">
-                    <a href="register.php" class="btn btn-trust-primary">
-                        Experimentar Grátis
-                    </a>
-                    <a href="#features" class="btn btn-trust-outline-light">
-                        Ver Recursos
-                    </a>
+
+<!-- SECTION: BRASALLIS HUB ENTERPRISE HERO -->
+<section id="hero" class="hero-ultra-clean text-center">
+    <div class="container">
+        <div data-aos="fade-up">
+            <span class="hero-tag">Simplicidade & Performance</span>
+            <h1 class="hero-h1-clean">
+                A Gestão que Escala <br>com sua <span style="color:var(--u-brand-blue);">Ambição.</span>
+            </h1>
+            <p class="hero-p-clean">
+                A plataforma definitiva para empresas que buscam automação inteligente com ruído zero. Uma interface robusta, intuitiva e focada na sua escala acelerada.
+            </p>
+            <div class="d-flex justify-content-center gap-4">
+                <a href="/register.php" class="u-btn-primary py-3 px-5 fs-6" style="border-radius: 12px;">Iniciar Teste Grátis</a>
+                <a href="#solucoes" class="btn btn-outline-dark" style="padding: 18px 48px; border-radius: 12px; font-weight: 700; font-size: 1.1rem;">Conhecer Soluções</a>
+            </div>
+        </div>
+ 
+        <div class="mt-5" data-aos="fade-up" data-aos-delay="200">
+            <img src="/assets/img/dashboard_attachment.jpg" alt="Brasallis Dashboard" class="mockup-img-clean">
+        </div>
+    </div>
+</section>
+
+<!-- SECTION: SOLUTIONS ULTRA-CLEAN (PLATFORM CORE) -->
+<section id="solucoes" class="sec-ultra" style="background: var(--u-soft);">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="hero-tag">Tudo o que você precisa</span>
+            <h2 class="display-5 fw-bold text-dark">Acelerando o seu <br>Crescimento <span style="color:var(--u-wa-green);">Digital.</span></h2>
+        </div>
+
+        <div class="solutions-grid">
+            <!-- Card 1 -->
+            <div class="u-card-clean" data-aos="fade-up">
+                <div class="u-card-icon">
+                    <svg class="u-icon-anim" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
                 </div>
-                
-                <div class="mt-5 border-top pt-4">
-                    <p class="small text-muted mb-2">Confiado por:</p>
-                    <div class="d-flex gap-4 opacity-50 grayscale-logos">
-                        <span class="fw-bold text-dark"><i class="fas fa-store"></i> LOJA 1</span>
-                        <span class="fw-bold text-dark"><i class="fas fa-shopping-bag"></i> SHOP X</span>
-                        <span class="fw-bold text-dark"><i class="fas fa-truck"></i> DISTRIB E</span>
-                    </div>
+                <h3 class="u-card-title">Venda em Segundos</h3>
+                <p class="u-card-desc">Nosso PDV é otimizado para velocidade. Busque produtos, aplique descontos e finalize pagamentos em tempo recorde.</p>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="u-card-clean" data-aos="fade-up" data-aos-delay="100">
+                <div class="u-card-icon">
+                    <svg class="u-icon-anim" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                    </svg>
+                </div>
+                <h3 class="u-card-title">Controle de Estoque</h3>
+                <p class="u-card-desc">Sincronização 360°. Tenha visão total de suas movimentações, alertas de estoque baixo e relatórios preditivos.</p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="u-card-clean" data-aos="fade-up" data-aos-delay="200">
+                <div class="u-card-icon">
+                    <svg class="u-icon-anim" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10"></line>
+                        <line x1="12" y1="20" x2="12" y2="4"></line>
+                        <line x1="6" y1="20" x2="6" y2="14"></line>
+                    </svg>
+                </div>
+                <h3 class="u-card-title">Relatórios Inteligentes</h3>
+                <p class="u-card-desc">Decisórias baseadas em dados. Acompanhe seu faturamento, lucro líquido e ticket médio em tempo real.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+
+
+<!-- ====================================================
+     SECTION: 3-AUDIENCE VALUE PROPOSITION
+     Para cada tipo de cliente: Iniciante, Crescimento, Líder
+===================================================== -->
+<!-- SECTION: AUDIENCE ULTRA-CLEAN (SEGMENTATION) -->
+<section id="para-voce" class="sec-ultra" style="background: #fff;">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="hero-tag">Sob Medida para Você</span>
+            <h2 class="display-5 fw-bold text-dark">A base que você precisa,<br>para o <span style="color:var(--u-wa-green);">Tamanho</span> que você quer.</h2>
+        </div>
+
+        <div class="solutions-grid">
+            <!-- MEI -->
+            <div class="u-card-clean" data-aos="fade-up">
+                <div class="u-card-subtitle" style="color:var(--u-brand-blue); font-size:0.7rem; font-weight:800; letter-spacing:1px; margin-bottom:10px;">BRASALLIS START</div>
+                <h3 class="u-card-title">Empresas MEI</h3>
+                <p class="u-card-desc">Ganhe tempo e profissionalismo. Saia das planilhas e organize suas vendas e estoque em segundos.</p>
+                <div class="mt-4">
+                    <a href="/register.php" class="btn btn-dark w-100 py-3 fw-bold" style="border-radius:12px;">Começar Agora</a>
                 </div>
             </div>
-            
-            <!-- Fiscal Depth Mockup (Interactive) -->
-            <div class="col-lg-7 position-relative" data-aos="fade-left">
-                <div class="mockup-container bg-white p-4">
-                    <!-- Chart Container -->
-                    <div style="height: 350px;">
-                        <canvas id="heroChart"></canvas>
-                    </div>
+
+            <!-- PME -->
+            <div class="u-card-clean" data-aos="fade-up" data-aos-delay="100">
+                <div class="u-card-subtitle" style="color:var(--u-wa-green); font-size:0.7rem; font-weight:800; letter-spacing:1px; margin-bottom:10px;">BRASALLIS PRO</div>
+                <h3 class="u-card-title">Pequenas e Médias</h3>
+                <p class="u-card-desc">Para quem já escala. Conte com relatórios financeiros avançados, multi-lojas e automação de processos.</p>
+                <div class="mt-4">
+                    <a href="#planos" class="btn btn-primary w-100 py-3 fw-bold" style="border-radius:12px; background:var(--u-brand-blue); border:none;">Ver Planos Pro</a>
                 </div>
-                
-                <!-- Floating Elements (Depth) -->
-                <div class="float-badge badge-pos-1">
-                    <div class="rounded-circle bg-success bg-opacity-10 p-2 text-success">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div>
-                        <small class="text-muted d-block" style="font-size: 10px;">Status NF-e</small>
-                        <span class="fw-bold text-dark small">Autorizada</span>
-                    </div>
-                </div>
-                
-                <div class="float-badge badge-pos-2">
-                    <div class="rounded-circle bg-primary bg-opacity-10 p-2 text-primary">
-                        <i class="fas fa-arrow-up"></i>
-                    </div>
-                    <div>
-                        <small class="text-muted d-block" style="font-size: 10px;">Receita Hoje</small>
-                        <span class="fw-bold text-dark small">R$ 14.500</span>
-                    </div>
+            </div>
+
+            <!-- Enterprise -->
+            <div class="u-card-clean" data-aos="fade-up" data-aos-delay="200">
+                <div class="u-card-subtitle" style="color:var(--u-accent); font-size:0.7rem; font-weight:800; letter-spacing:1px; margin-bottom:10px;">BRASALLIS ENTERPRISE</div>
+                <h3 class="u-card-title">Corporativo</h3>
+                <p class="u-card-desc">Soluções customizadas para grandes operações. Infraestrutura dedicada, SLAs e gerente de conta exclusivo.</p>
+                <div class="mt-4">
+                    <a href="https://wa.me/5511999999999" class="btn btn-outline-dark w-100 py-3 fw-bold" style="border-radius:12px;">Atendimento VIP</a>
                 </div>
             </div>
         </div>
     </div>
 </section>
 
-<!-- ABOUT SECTION: Mission & Authority -->
-<section id="about" class="section-white">
+
+
+<!-- SECTION: PRICING (Modern Light) -->
+<section id="planos" class="sec-ultra" style="background: var(--u-soft); border-top: 1px solid var(--u-border);">
     <div class="container">
-        <div class="row align-items-center gy-5">
-            <div class="col-lg-5 order-lg-2 ms-lg-auto" data-aos="fade-left">
-                <div class="d-flex align-items-center gap-2 mb-3">
-                    <span class="d-block bg-primary rounded-circle" style="width: 8px; height: 8px;"></span>
-                    <span class="text-uppercase small fw-bold text-primary tracking-wide">Sobre Nós</span>
-                </div>
-                <h2 class="display-5 fw-bold mb-4">Engenharia aplicada ao Varejo.</h2>
-                <p class="lead mb-4">
-                    Nascemos com uma missão clara: <strong>Acabar com a complexidade fiscal</strong> que impede pequenos e médios varejistas de crescerem.
-                </p>
-                <p class="text-secondary mb-4">
-                    O WiseFlow não é apenas um software. É uma camada de inteligência que protege seu CNPJ. Processamos mais de R$ 500 milhões em vendas anuais, garantindo que cada centavo de imposto seja calculado com precisão cirúrgica.
-                </p>
-                
-                <div class="d-flex gap-4 mt-5">
-                    <div>
-                        <h3 class="fw-bold mb-0 text-primary">5+</h3>
-                        <small class="text-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Anos de Mercado</small>
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="fw-bold text-uppercase small ls-2 mb-3 d-block" style="color: var(--u-accent); letter-spacing: 2px;">Investimento em Sucesso</span>
+            <h2 class="display-4 fw-black" style="color: var(--u-dark);">Escolha seu Plano <span style="color: var(--u-accent)">Ideal.</span></h2>
+            <p class="fs-5 mx-auto" style="max-width: 600px; color: var(--u-text-dim);">Transparência total para que você saiba exatamente como estamos ajudando sua empresa a escalar.</p>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Plano 1: Iniciante -->
+            <div class="pricing-card" data-aos="fade-up">
+                <div>
+                    <div class="trial-badge">Brasallis Foundation</div>
+                    <h4 class="fw-bold mb-4">Foundation Hub</h4>
+                    <p class="text-muted small mb-5">Governança operacional de alta densidade. A estrutura sólida para organizar seu estoque e financeiro com perfeição.</p>
+                    <div class="mb-5">
+                        <span class="price-value">R$ 189</span>
+                        <span class="price-period">,90/mês</span>
                     </div>
-                    <div>
-                        <h3 class="fw-bold mb-0 text-primary">2k+</h3>
-                        <small class="text-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Lojas Ativas</small>
-                    </div>
-                    <div>
-                        <h3 class="fw-bold mb-0 text-primary">99.9%</h3>
-                        <small class="text-secondary text-uppercase fw-bold" style="font-size: 0.7rem;">Uptime (SLA)</small>
+                    <div class="benefits-list">
+                        <div class="benefit-item"><i class="fas fa-check"></i> Gestão de Estoque Multiponto</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> Financeiro Brasallis Core</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> PDV de Alta Performance</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> <strong>50 Ações de Agentes IQ/mês</strong></div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> 03 Usuários Simultâneos</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> Emissor de Notas Ilimitado</div>
                     </div>
                 </div>
+                <a href="register.php?plan=foundation" class="btn btn-u-outline w-100 py-3 rounded-pill fw-bold mt-5">Iniciar Agora</a>
             </div>
-            
-            <div class="col-lg-6 order-lg-1" data-aos="fade-right">
-                <!-- CHART: The WiseFlow Effect -->
-                <div class="card-trust p-4 border-primary border-opacity-10" style="background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);">
+
+            <!-- Plano 2: Business (Em Destaque) -->
+            <div class="pricing-card featured u-tint-green" data-aos="fade-up" data-aos-delay="100">
+                <div>
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <h6 class="fw-bold mb-1" style="color: var(--sys-navy);">O Efeito WiseFlow</h6>
-                            <small class="text-secondary">Crescimento Médio vs. Gestão Manual</small>
-                        </div>
-                        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                            <i class="fas fa-arrow-trend-up me-1"></i> +40% Receita
-                        </span>
+                        <div class="trial-badge" style="background: var(--u-accent); color: white; border: none;">Brasallis Vision AI</div>
+                        <span class="badge bg-success bg-opacity-20 text-success p-2 px-3 rounded-pill fw-bold" style="font-size: 0.75rem;">Mais Popular</span>
                     </div>
-                    
-                    <div style="height: 320px;">
-                        <canvas id="chartAbout"></canvas>
+                    <h4 class="fw-bold mb-0" style="color: var(--u-dark);">Vision AI Hub</h4>
+                    <p class="opacity-70 small mb-5 mt-3" style="color: var(--u-text-dim);">Produtividade exponencial via Visão Computacional. Processamento de documentos em milissegundos sem digitação.</p>
+                    <div class="mb-5">
+                        <span class="price-value">R$ 389</span>
+                        <span class="price-period">,90/mês</span>
                     </div>
-                    
-                    <!-- Micro interactions / Insights -->
-                    <div class="row mt-4 pt-3 border-top g-3">
-                        <div class="col-6">
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="rounded-circle bg-danger bg-opacity-10 p-2 d-flex justify-content-center align-items-center" style="width:32px; height:32px;">
-                                    <i class="fas fa-arrow-down text-danger" style="font-size: 0.8rem;"></i>
-                                </div>
-                                <div>
-                                    <span class="d-block fw-bold small">-15h</span>
-                                    <small class="text-secondary" style="font-size: 0.7rem;">Tempo gasto/semana</small>
-                                </div>
-                            </div>
+                    <div class="benefits-list">
+                        <div class="benefit-item"><i class="fas fa-check"></i> <b>OCR de Notas Ilimitado</b></div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> <b>250 Ações de Agentes IQ/mês</b></div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> Automação de Entrada de Compra</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> 10 Usuários Simultâneos</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> Suporte Prioritário Enterprise</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> Auditoria Fiscal Automatizada</div>
+                    </div>
+                </div>
+                <a href="register.php?plan=vision" class="btn btn-u-black w-100 py-3 rounded-pill fw-bold mt-5" style="background: var(--u-accent);">Ativar Vision AI</a>
+            </div>
+
+            <!-- Plano 3: Enterprise -->
+            <div class="pricing-card" data-aos="fade-up" data-aos-delay="200">
+                <div>
+                    <div class="trial-badge">Brasallis Elite</div>
+                    <h4 class="fw-bold mb-4">Enterprise Elite</h4>
+                    <p class="text-muted small mb-5">O cérebro da operação. IA preditiva que mapeia o futuro da sua empresa, garantindo lucro e controle absoluto.</p>
+                    <div class="mb-5">
+                        <span class="price-value">R$ 899</span>
+                        <span class="price-period">,90/mês</span>
+                    </div>
+                    <div class="benefits-list">
+                        <div class="benefit-item"><i class="fas fa-check"></i> <b>Brasallis IQ: IA Preditiva</b></div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> <b>1.000+ Ações de Agentes IQ/mês</b></div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> Gêmeo Digital (Nexus Core)</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> Multi-Empresa & Consolidação</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> Gerente de Sucesso Dedicado</div>
+                        <div class="benefit-item"><i class="fas fa-check"></i> API de Alta Performance Aberta</div>
+                    </div>
+                </div>
+                <a href="register.php?plan=enterprise" class="btn btn-u-outline w-100 py-3 rounded-pill fw-bold mt-5">Consultar Elite</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION: BRASALLIS EM AÇÃO (VIDEO HUB) -->
+<section id="demo" class="sec-ultra" style="background: #fff;">
+    <div class="container">
+        <div class="text-center mb-5" data-aos="fade-up">
+            <span class="hero-tag">Demonstração ao Vivo</span>
+            <h2 class="display-5 fw-bold text-dark">Veja o Poder do <span style="color:var(--u-brand-blue);">Brasallis IQ</span>.</h2>
+            <p class="text-muted mx-auto" style="max-width: 600px;">Assista como nossa tecnologia está revolucionando o varejo e a gestão logística.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="u-video-card" onclick="openVideoModal('dQw4w9WgXcQ')">
+                    <div class="u-video-thumb">
+                        <i class="fas fa-desktop fa-4x opacity-10"></i>
+                        <div class="u-play-overlay">
+                            <div class="u-play-icon"><i class="fas fa-play"></i></div>
                         </div>
-                        <div class="col-6">
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="rounded-circle bg-success bg-opacity-10 p-2 d-flex justify-content-center align-items-center" style="width:32px; height:32px;">
-                                    <i class="fas fa-check text-success" style="font-size: 0.8rem;"></i>
-                                </div>
-                                <div>
-                                    <span class="d-block fw-bold small">Zero</span>
-                                    <small class="text-secondary" style="font-size: 0.7rem;">Multas Fiscais</small>
-                                </div>
-                            </div>
+                    </div>
+                    <div class="p-4">
+                        <h5 class="fw-bold mb-2">Tour Completo pelo Hub</h5>
+                        <p class="small text-muted mb-0">Uma visão geral de 5 minutos sobre as funcionalidades do sistema.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="u-video-card" onclick="openVideoModal('dQw4w9WgXcQ')">
+                    <div class="u-video-thumb">
+                        <i class="fas fa-eye fa-4x opacity-10"></i>
+                        <div class="u-play-overlay">
+                            <div class="u-play-icon"><i class="fas fa-play"></i></div>
                         </div>
+                    </div>
+                    <div class="p-4">
+                        <h5 class="fw-bold mb-2">Automação Vision AI (OCR)</h5>
+                        <p class="small text-muted mb-0">Veja como processamos uma nota fiscal em menos de 2 segundos.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="u-video-card" onclick="openVideoModal('dQw4w9WgXcQ')">
+                    <div class="u-video-thumb">
+                        <i class="fas fa-brain fa-4x opacity-10"></i>
+                        <div class="u-play-overlay">
+                            <div class="u-play-icon"><i class="fas fa-play"></i></div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h5 class="fw-bold mb-2">Previsão de Giro com IQ</h5>
+                        <p class="small text-muted mb-0">Entenda como a IA avisa o momento exato de repor seu estoque.</p>
                     </div>
                 </div>
             </div>
@@ -233,377 +947,111 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </section>
 
-<!-- INTERACTIVE FEATURES (Tabs) -->
-<section id="features" class="section-alt">
+<!-- SECTION: NEWSLETTER STRATEGIC HUB -->
+<section class="sec-ultra" style="background: var(--u-soft);">
     <div class="container">
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Gestão Completa</h2>
-            <p class="text-secondary">Uma conta, todas as soluções.</p>
-        </div>
-        
-        <!-- Tabs Nav -->
-        <ul class="nav nav-pills-trust justify-content-center mb-5" id="pills-tab" role="tablist">
-            <li class="nav-item">
-                <button class="nav-link active" id="pills-fiscal-tab" data-bs-toggle="pill" data-bs-target="#pills-fiscal" type="button">Fiscal & NF-e</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="pills-stock-tab" data-bs-toggle="pill" data-bs-target="#pills-stock" type="button">Estoque Inteligente</button>
-            </li>
-            <li class="nav-item">
-                <button class="nav-link" id="pills-finance-tab" data-bs-toggle="pill" data-bs-target="#pills-finance" type="button">Gestão Financeira</button>
-            </li>
-        </ul>
-        
-        <!-- Tabs Content -->
-        <div class="tab-content" id="pills-tabContent">
-            <!-- Fiscal -->
-            <div class="tab-pane fade show active" id="pills-fiscal" role="tabpanel">
-                <div class="row align-items-center g-5">
-                    <div class="col-lg-6">
-                        <h3 class="mb-3">Emissor Turbo Connect</h3>
-                        <p class="text-secondary mb-4">
-                            Emita notas fiscais em segundos. Nosso sistema valida NCMs automaticamente e calcula impostos como ICMS-ST e Difal sem você precisar de um contador ao lado.
-                        </p>
-                        <ul class="list-unstyled d-flex flex-column gap-3">
-                            <li class="d-flex align-items-center gap-3">
-                                <div class="icon-box-trust mb-0" style="width: 40px; height: 40px;"><i class="fas fa-bolt text-primary"></i></div>
-                                <span>Emissão em 2 segundos</span>
-                            </li>
-                            <li class="d-flex align-items-center gap-3">
-                                <div class="icon-box-trust mb-0" style="width: 40px; height: 40px;"><i class="fas fa-search text-primary"></i></div>
-                                <span>Auditoria de NCM Automática</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="card-trust p-4 h-100">
-                             <h6 class="text-secondary text-uppercase small fw-bold mb-3">Volume de Emissões (Últimos 6 Meses)</h6>
-                             <div style="height: 300px;">
-                                <canvas id="chartFiscal"></canvas>
-                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="newsletter-hub" data-aos="fade-up">
+            <span class="fw-bold text-uppercase small ls-2 mb-3 d-block" style="color: var(--u-brand-blue);">Insights de Mercado</span>
+            <h2 class="display-5 fw-black mb-4">Receba a Inteligência <br>do Futuro.</h2>
+            <p class="text-muted mb-5 mx-auto" style="max-width: 500px;">Assine nossa newsletter para receber tendências de IA, gestão de estoque e governança corporativa.</p>
             
-            <!-- Stock -->
-            <div class="tab-pane fade" id="pills-stock" role="tabpanel">
-                <div class="row align-items-center g-5">
-                    <div class="col-lg-6">
-                        <h3 class="mb-3">Controle que evita perdas</h3>
-                        <p class="text-secondary mb-4">
-                            Saiba exatamente o que tem na prateleira. O sistema avisa produtos perto do vencimento e sugere reposição baseada no giro de vendas.
-                        </p>
-                        <ul class="list-unstyled d-flex flex-column gap-3">
-                            <li class="d-flex align-items-center gap-3">
-                                <div class="icon-box-trust mb-0" style="width: 40px; height: 40px;"><i class="fas fa-box-open text-primary"></i></div>
-                                <span>Previsão de Ruptura (IA)</span>
-                            </li>
-                            <li class="d-flex align-items-center gap-3">
-                                <div class="icon-box-trust mb-0" style="width: 40px; height: 40px;"><i class="fas fa-rotate text-primary"></i></div>
-                                <span>Cálculo de Giro Automático</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="card-trust p-4 h-100">
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h6 class="text-secondary text-uppercase small fw-bold mb-0">Saúde do Estoque</h6>
-                                <span class="badge bg-success bg-opacity-10 text-success">Saudável</span>
-                            </div>
-                            <div style="height: 300px; position: relative;">
-                                <canvas id="chartStock"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Finance -->
-            <div class="tab-pane fade" id="pills-finance" role="tabpanel">
-                <div class="row align-items-center g-5">
-                    <div class="col-lg-6">
-                        <h3 class="mb-3">DRE e Lucro Real</h3>
-                        <p class="text-secondary mb-4">
-                            Não espere o fim do mês para saber se teve lucro. Acompanhe o DRE gerencial em tempo real, fluxo de caixa e conciliação bancária.
-                        </p>
-                         <ul class="list-unstyled d-flex flex-column gap-3">
-                            <li class="d-flex align-items-center gap-3">
-                                <div class="icon-box-trust mb-0" style="width: 40px; height: 40px;"><i class="fas fa-chart-line text-primary"></i></div>
-                                <span>DRE em Tempo Real</span>
-                            </li>
-                            <li class="d-flex align-items-center gap-3">
-                                <div class="icon-box-trust mb-0" style="width: 40px; height: 40px;"><i class="fas fa-file-invoice-dollar text-primary"></i></div>
-                                <span>Conciliação Bancária</span>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-6">
-                         <div class="card-trust p-4 h-100">
-                             <h6 class="text-secondary text-uppercase small fw-bold mb-3">DRE Gerencial (Tempo Real)</h6>
-                             <div style="height: 300px;">
-                                <canvas id="chartFinance"></canvas>
-                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <form class="newsletter-input-group">
+                <input type="email" class="u-input-premium" placeholder="Seu e-mail profissional..." required>
+                <button type="submit" class="u-btn-subscribe">Inscrever</button>
+            </form>
+            <p class="small text-muted mt-4 opacity-50">Respeitamos sua privacidade. Zero spam.</p>
         </div>
     </div>
 </section>
 
-<!-- TRUST FOOTER -->
-<footer class="footer-trust mt-0">
-    <div class="container">
-        <div class="row g-5">
-            <div class="col-lg-4">
-                <h5 class="fw-bold mb-4 d-flex align-items-center gap-2">
-                    <img src="assets/img/logu.jpeg" width="32" class="rounded-circle" alt="Logo">
-                    WiseFlow
-                </h5>
-                <p class="small text-white-50">
-                    Plataforma líder em gestão fiscal e comercial para varejo de alta performance.
-                </p>
-                <div class="d-flex gap-3 mt-4">
-                    <a href="#"><i class="fab fa-instagram fa-lg"></i></a>
-                    <a href="#"><i class="fab fa-linkedin fa-lg"></i></a>
-                    <a href="#"><i class="fab fa-whatsapp fa-lg"></i></a>
-                </div>
+<!-- VIDEO MODAL -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 bg-transparent">
+            <div class="modal-header border-0 p-0 justify-content-end">
+                <button type="button" class="btn-close btn-close-white mb-2" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            
-            <div class="col-6 col-lg-2">
-                <h6 class="fw-bold mb-3 small text-uppercase text-white-50">Produto</h6>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="#">Fiscal</a></li>
-                    <li class="mb-2"><a href="#">Estoque</a></li>
-                    <li class="mb-2"><a href="#">Financeiro</a></li>
-                    <li class="mb-2"><a href="developers.php">API Developers</a></li>
-                </ul>
-            </div>
-            
-            <div class="col-6 col-lg-2">
-                <h6 class="fw-bold mb-3 small text-uppercase text-white-50">Empresa</h6>
-                <ul class="list-unstyled small">
-                    <li class="mb-2"><a href="#about">Sobre Nós</a></li>
-                    <li class="mb-2"><a href="#">Contato</a></li>
-                    <li class="mb-2"><a href="#">Blog</a></li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-4">
-                <div class="p-4 rounded-3 border border-white border-opacity-10 bg-white bg-opacity-10">
-                    <h6 class="fw-bold mb-2">Precisa de ajuda?</h6>
-                    <p class="small text-white-50 mb-3">Nosso time de suporte fiscal está online.</p>
-                    <a href="#" class="btn btn-sm btn-light text-primary fw-bold w-100">Falar com Consultor</a>
+            <div class="modal-body p-0">
+                <div class="ratio ratio-16x9 shadow-lg rounded-3 overflow-hidden">
+                    <iframe id="youtubeIframe" src="" title="YouTube video" allowfullscreen></iframe>
                 </div>
             </div>
         </div>
-        
-        <div class="border-top border-white border-opacity-10 mt-5 pt-4 text-center small text-white-50">
-            &copy; 2026 WiseFlow Tecnologia. Todos os direitos reservados.
+    </div>
+</div>
+
+<!-- FOOTER (Modern Light) -->
+<footer class="py-5" style="background: #fff; border-top: 1px solid var(--u-border);">
+    <div class="container">
+        <div class="row g-4 align-items-center">
+            <div class="col-lg-3">
+                <img src="/assets/img/pureza.png" alt="Brasallis Logo" style="height: 85px; width: auto; object-fit: contain;">
+            </div>
+            <div class="col-lg-9 text-lg-end">
+                <div class="d-flex justify-content-lg-end gap-4 flex-wrap">
+                    <a href="register.php" class="text-dark text-decoration-none small opacity-50 hover-opacity-100 fw-bold">CRIAR CONTA</a>
+                    <a href="#planos" class="text-dark text-decoration-none small opacity-50 hover-opacity-100 fw-bold">PLANOS</a>
+                    <a href="login.php" class="text-dark text-decoration-none small opacity-50 hover-opacity-100 fw-bold">LOGIN</a>
+                    <span class="small opacity-30 ms-lg-4 text-black">© 2026 Brasallis Hub. Design Moderno e Solar.</span>
+                </div>
+            </div>
         </div>
     </div>
 </footer>
 
-<!-- Style Override to Fix Icons/Text -->
-<style>.grayscale-logos { filter: grayscale(100%); opacity: 0.6; }</style>
-
-<!-- AOS Init -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-  AOS.init({ duration: 800, once: true });
-
-  // SCROLLSPY (Blue Highlight)
-  const sections = document.querySelectorAll('section');
-  const navLi = document.querySelectorAll('.navbar-nav .nav-item .nav-link');
-
-  window.addEventListener('scroll', () => {
-    let current = '';
-    
-    sections.forEach(section => {
-      const sectionTop = section.offsetTop;
-      const sectionHeight = section.clientHeight;
-      if (scrollY >= (sectionTop - 200)) {
-        current = section.getAttribute('id');
-      }
+    AOS.init({ 
+        duration: 800, 
+        once: true,
+        easing: 'ease-out-quad' // Smoother, simpler Brasallis feel
     });
 
-    if (scrollY < 200) current = ''; 
-    
-    navLi.forEach(li => {
-      li.classList.remove('active', 'text-primary');
-      const href = li.getAttribute('href');
+    // Mobile Menu Toggle Logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const mobileBtn = document.getElementById('mobileMenuBtn');
+        const navLinksArea = document.querySelector('.nav-links-area');
+        const navLinks = document.querySelectorAll('.nav-link-u');
 
-      if (current === '') {
-        // Top of page -> Highlight Home only
-        if (li.textContent.trim() === 'Home') { 
-             li.classList.add('active', 'text-primary');
+        if (mobileBtn && navLinksArea) {
+            mobileBtn.addEventListener('click', function() {
+                mobileBtn.classList.toggle('active');
+                navLinksArea.classList.toggle('mobile-active');
+                document.body.style.overflow = navLinksArea.classList.contains('mobile-active') ? 'hidden' : '';
+            });
+
+            // Close menu when a link is clicked
+            navLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileBtn.classList.remove('active');
+                    navLinksArea.classList.remove('mobile-active');
+                    document.body.style.overflow = '';
+                });
+            });
         }
-      } else {
-        // Scrolled -> Highlight matching section (if not Home)
-        if (href.includes(current) && li.textContent.trim() !== 'Home') {
-             li.classList.add('active', 'text-primary');
-        }
-      }
     });
-  });
 
-  // CHART CONFIGURATION (WiseFlow Identity)
-  Chart.defaults.font.family = "'Outfit', sans-serif";
-  Chart.defaults.color = '#64748B';
-  const navy = '#0A2647';
-  const emerald = '#2C7865';
-  const emeraldLight = 'rgba(44, 120, 101, 0.2)';
+    // Video Modal Logic for Brasallis Hub
+    const videoModalElem = document.getElementById('videoModal');
+    const youtubeIframe = document.getElementById('youtubeIframe');
+    let bootstrapVideoModal = null;
 
-  // 1. HERO CHART (Revenue Growth)
-  const ctxHero = document.getElementById('heroChart');
-  if (ctxHero) {
-      new Chart(ctxHero, {
-          type: 'line',
-          data: {
-              labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
-              datasets: [{
-                  label: 'Crescimento de Receita',
-                  data: [12000, 19000, 15000, 25000, 32000, 45000],
-                  borderColor: emerald,
-                  backgroundColor: emeraldLight,
-                  borderWidth: 3,
-                  tension: 0.4,
-                  fill: true,
-                  pointBackgroundColor: '#fff',
-                  pointBorderColor: emerald,
-                  pointRadius: 6
-              }]
-          },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              scales: {
-                  y: { display: false, grid: { display: false } },
-                  x: { grid: { display: false } }
-              }
-          }
-      });
-  }
+    if (videoModalElem) {
+        bootstrapVideoModal = new bootstrap.Modal(videoModalElem);
+        
+        // Clean up on close
+        videoModalElem.addEventListener('hidden.bs.modal', function () {
+            youtubeIframe.src = '';
+        });
+    }
 
-  // 2. FISCAL CHART (Sales Volume)
-  const ctxFiscal = document.getElementById('chartFiscal');
-  if (ctxFiscal) {
-      new Chart(ctxFiscal, {
-          type: 'bar',
-          data: {
-              labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'],
-              datasets: [{
-                  label: 'Notas Emitidas',
-                  data: [45, 59, 80, 81, 156, 120],
-                  backgroundColor: navy,
-                  borderRadius: 4
-              }]
-          },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              scales: { y: { beginAtZero: true } }
-          }
-      });
-  }
+    function openVideoModal(videoId) {
+        if (youtubeIframe && bootstrapVideoModal) {
+            youtubeIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+            bootstrapVideoModal.show();
+        }
+    }
 
-  // 3. STOCK CHART (Health)
-  const ctxStock = document.getElementById('chartStock');
-  if (ctxStock) {
-      new Chart(ctxStock, {
-          type: 'doughnut',
-          data: {
-              labels: ['Estoque Saudável', 'Baixo Giro', 'Crítico'],
-              datasets: [{
-                  data: [300, 50, 20],
-                  backgroundColor: [emerald, '#F59E0B', '#EF4444'],
-                  borderWidth: 0,
-                  hoverOffset: 4
-              }]
-          },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { 
-                  legend: { position: 'bottom', labels: { usePointStyle: true } } 
-              },
-              cutout: '70%'
-          }
-      });
-  }
-
-  // 4. FINANCE CHART (DRE)
-  const ctxFinance = document.getElementById('chartFinance');
-  if (ctxFinance) {
-      new Chart(ctxFinance, {
-          type: 'bar',
-          data: {
-              labels: ['Receita', 'Custos', 'Despesas', 'Lucro'],
-              datasets: [{
-                  label: 'DRE Consolidado',
-                  data: [100000, -40000, -20000, 40000],
-                  backgroundColor: [emerald, '#EF4444', '#F59E0B', navy],
-                  borderRadius: 6
-              }]
-          },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { legend: { display: false } },
-              indexAxis: 'y'
-          }
-      });
-  }
-
-  // 5. ABOUT CHART (Growth Story - The "WiseFlow Effect")
-  const ctxAbout = document.getElementById('chartAbout');
-  if (ctxAbout) {
-      new Chart(ctxAbout, {
-          type: 'line',
-          data: {
-              labels: ['Ano 1', 'Ano 2', 'Ano 3', 'Ano 4', 'Ano 5'],
-              datasets: [
-                {
-                  label: 'Com WiseFlow',
-                  data: [100, 180, 290, 450, 680],
-                  borderColor: navy,
-                  backgroundColor: 'rgba(10, 38, 71, 0.05)',
-                  borderWidth: 3,
-                  tension: 0.4,
-                  fill: true,
-                  pointBackgroundColor: navy
-                },
-                {
-                  label: 'Gestão Manual',
-                  data: [100, 120, 135, 145, 155],
-                  borderColor: '#94A3B8',
-                  borderWidth: 2,
-                  borderDash: [5, 5],
-                  tension: 0.4,
-                  pointRadius: 0
-                  // No fill for manual
-                }
-              ]
-          },
-          options: {
-              responsive: true,
-              maintainAspectRatio: false,
-              plugins: { 
-                legend: { position: 'bottom' },
-                tooltip: { mode: 'index', intersect: false }
-              },
-              scales: {
-                  y: { display: false },
-                  x: { grid: { display: false } }
-              }
-          }
-      });
-  }
 </script>
 
-<?php /* Custom footer used above */ ?>
-</body>
-</html>
+<?php require_once __DIR__ . '/../includes/rodape.php'; ?>

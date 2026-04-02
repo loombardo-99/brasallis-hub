@@ -3,7 +3,7 @@
         <div class="container p-4">
             <div class="row">
                 <div class="col-lg-6 col-md-12 mb-4 mb-md-0">
-                    <h5 class="text-uppercase" style="font-family: 'Outfit', sans-serif; font-weight: 700;">WiseFlow</h5>
+                    <h5 class="text-uppercase" style="font-family: 'Outfit', sans-serif; font-weight: 700;">Brasallis</h5>
                     <p>
                         Transformando o caos do seu inventário em controle e lucro.
                     </p>
@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="text-center p-3" style="background-color: rgba(0, 0, 0, 0.2);">
-            © <?php echo date("Y"); ?> WiseFlow. Todos os direitos reservados.
+            © <?php echo date("Y"); ?> Brasallis. Todos os direitos reservados.
         </div>
     </footer>
 

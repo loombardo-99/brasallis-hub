@@ -3,6 +3,46 @@
 require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/includes/db_config.php';
 
+// --- CONFIGURAÇÕES DE SEGURANÇA DE SESSÃO ---
+if (session_status() === PHP_SESSION_NONE) {
+    // Configura cookies de sessão para serem mais seguros
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => '',
+        'secure' => isset($_SERVER['HTTPS']),
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+    
+    ini_set('session.use_only_cookies', 1);
+    ini_set('session.use_strict_mode', 1);
+
+    session_start();
+}
+
+// --- HELPER DE PREVENÇÃO DE XSS ---
+/**
+ * Atalho para htmlspecialchars para proteção contra XSS.
+ */
+function e($value) {
+    return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+}
+
+/**
+ * Gera um campo hidden com o token CSRF.
+ */
+function csrf_field() {
+    // Session is now started at the top of bootstrap.php
+    
+    // Gera se não existir (redundância com o middleware)
+    if (empty($_SESSION['_csrf_token'])) {
+        $_SESSION['_csrf_token'] = bin2hex(random_bytes(32));
+    }
+    
+    return '<input type="hidden" name="_csrf_token" value="' . $_SESSION['_csrf_token'] . '">';
+}
+
 use App\Database;
 use App\DashboardRepository;
 
@@ -24,12 +64,7 @@ $container['db'] = function() {
 
 // Repository Services
 $container[DashboardRepository::class] = function($c) {
-    // We need the empresa_id to instantiate the repository.
-    // In a real framework, we would have a Request object or Session service.
-    // For now, we'll assume the session is started and available.
-    if (session_status() === PHP_SESSION_NONE) {
-        session_start();
-    }
+    // Session is now started at the top of bootstrap.php
     
     $empresa_id = $_SESSION['empresa_id'] ?? null;
     

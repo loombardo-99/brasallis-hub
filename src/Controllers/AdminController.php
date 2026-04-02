@@ -35,7 +35,21 @@ class AdminController
 
     public function index()
     {
-        // Run automations if needed
+        // --- 1. SMART REDIRECT FOR EMPLOYEES ---
+        // Se for funcionário, não vê o Dashboard Executivo por padrão.
+        if (isset($_SESSION['user_type']) && $_SESSION['user_type'] === 'employee') {
+            $moduleUrl = $this->getRecommendedModule();
+            if ($moduleUrl) {
+                header("Location: $moduleUrl");
+                exit;
+            } else {
+                // Fallback para página de "Acesso Pendente" se não tiver nenhuma permissão
+                header("Location: /admin/dashboard_funcionario.php");
+                exit;
+            }
+        }
+
+        // Run automations loop for Admins
         if (file_exists(__DIR__ . '/../../admin/run_automations.php')) {
             require_once __DIR__ . '/../../admin/run_automations.php';
             runNotificationAutomations($this->dashboardRepo->getConnection(), $this->empresa_id);
@@ -47,11 +61,25 @@ class AdminController
 
             // Fetch Data
             $kpis = $dashboardRepo->getDashboardKPIs();
+            $crm_kpis = $dashboardRepo->getCRMKPIs();
+            $fin_kpis = $dashboardRepo->getFinancialKPIs();
+            
+            $exec_health = $dashboardRepo->getExecutiveHealth();
+            $metas_exec = $dashboardRepo->getMetasExecutivas();
+            $crm_projects = $dashboardRepo->getProjectCompletionBoard();
+            $operacoes = $dashboardRepo->getOperationsLogistics();
+            
             $avisos = $dashboardRepo->getConnection()->query("SELECT * FROM avisos_globais WHERE active = 1 ORDER BY created_at DESC")->fetchAll(\PDO::FETCH_ASSOC);
+            $insights = $dashboardRepo->getDashboardInsights();
+            
             $produtos_validade = $dashboardRepo->getProdutosProximosValidade(5);
             $ultimas_compras = $dashboardRepo->getUltimasCompras(5);
             $chart_data = $dashboardRepo->getSalesAndProfitOverTime('month');
             $forecast_data = $dashboardRepo->getSalesForecast(7);
+
+            // Validação de fallback para evitar Warnings PHP quebrando a sintaxe JS
+            if (!is_array($chart_data)) $chart_data = [];
+            if (!is_array($forecast_data) || !isset($forecast_data['forecast'])) $forecast_data = ['forecast' => []];
 
             // Prepare View Data
             $chart_labels = json_encode(array_column($chart_data, 'label')) ?: '[]';
@@ -69,6 +97,33 @@ class AdminController
         } catch (Throwable $e) {
             $this->renderError($e);
         }
+    }
+
+    /**
+     * Identifica o módulo recomendado baseado nas permissões do funcionário
+     */
+    private function getRecommendedModule()
+    {
+        // Prioridade de direcionamento (Comercial > Operacional > Financeiro > RH)
+        $priority = [
+            'crm'       => '/modules/crm/views/kanban.php',
+            'pdv'       => '/modules/pdv/views/index.php',
+            'estoque'   => '/admin/produtos.php',
+            'financeiro'=> '/modules/financeiro/views/index.php',
+            'rh'        => '/modules/rh/views/index.php',
+            'fiscal'    => '/admin/inteligencia_tributaria.php'
+        ];
+
+        foreach ($priority as $slug => $url) {
+            // Reutiliza a lógica global de check_permission se disponível, 
+            // mas aqui checamos direto o array de sessão para performance no controller
+            $perms = $_SESSION['permissions'] ?? [];
+            if (isset($perms[$slug]) && $perms[$slug] !== 'nenhuma') {
+                return $url;
+            }
+        }
+
+        return null;
     }
 
     private function renderError(Throwable $e)

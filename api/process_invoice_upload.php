@@ -41,9 +41,9 @@ if (!move_uploaded_file($_FILES['file']['tmp_name'], $dest_path)) {
     exit;
 }
 
-// Configurar execução do Python
+// Configurar execução do Python no Docker (Linux)
+$python_executable = 'python3'; 
 $gemini_api_key = GEMINI_API_KEY;
-$python_executable = 'py'; // Windows
 $script_path = realpath(__DIR__ . '/../scripts/process_invoice.py');
 $absolute_file_path = realpath($dest_path);
 

@@ -15,13 +15,10 @@ class Database
     {
         require_once __DIR__ . '/../includes/db_config.php';
 
-        try {
-            $this->conn = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
-            echo 'Connection Error: ' . $e->getMessage();
-        }
+        $this->conn = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
+        $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
+
 
     // Deprecated: Use Dependency Injection via bootstrap.php instead
     public static function getInstance()

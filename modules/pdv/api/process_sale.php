@@ -69,6 +69,16 @@ try {
         $stmtLog->execute([$empresa_id, $item['id'], $user_id, $item['qty'], $vendaId]);
     }
 
+    // 4. Integrar com Financeiro (Contas a Receber)
+    // Se a venda foi finalizada, geramos o recebível correspondente
+    $statusReceber = ($method === 'dinheiro' || $method === 'pix' || $method === 'cartao') ? 'recebido' : 'pendente';
+    $dataRecebimento = ($statusReceber === 'recebido') ? 'NOW()' : 'NULL';
+    
+    $sqlFin = "INSERT INTO contas_receber (empresa_id, descricao, valor, data_vencimento, data_recebimento, status, venda_id) 
+               VALUES (?, ?, ?, CURDATE(), $dataRecebimento, ?, ?)";
+    $stmtFin = $conn->prepare($sqlFin);
+    $stmtFin->execute([$empresa_id, "Venda PDV #$vendaId", $total, $statusReceber, $vendaId]);
+
     $conn->commit();
     echo json_encode(['success' => true, 'venda_id' => $vendaId]);
 

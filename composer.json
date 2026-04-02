@@ -1,16 +1,32 @@
 {
     "name": "jrlom/gerenciador-de-estoque",
-    "description": "Sistema de gerenciamento de estoque em PHP.",
+    "description": "Brasallis ERP — Sistema de gestão empresarial cloud-ready em PHP.",
     "type": "project",
     "authors": [
         {
             "name": "jrlom"
         }
     ],
-    "require": {},
+    "require": {
+        "php": ">=8.0",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "require-dev": {},
     "autoload": {
         "psr-4": {
             "App\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
     }
 }

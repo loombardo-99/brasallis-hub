@@ -1,0 +1,41 @@
+services:
+  # Servidor Web Brasallis
+  web:
+    build: .
+    container_name: brasallis-server
+    ports:
+      - "8001:80"
+    volumes:
+      - .:/var/www/html
+    restart: always
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+      - DB_HOST=db
+      - DB_NAME=gerenciador_estoque
+      - DB_USER=root
+      - DB_PASS=root
+
+  # Banco de Dados
+  db:
+    image: mariadb:10.11
+    container_name: brasallis-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: gerenciador_estoque
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./database/data:/var/lib/mysql
+      - ./dump_real.sql.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # Interface de Gestão do Banco
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: brasallis-pma
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=db

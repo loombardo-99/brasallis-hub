@@ -1,0 +1,39 @@
+services:
+  # Servidor Web Brasallis (Produção)
+  web:
+    build: .
+    container_name: brasallis-server-prod
+    ports:
+      - "80:80"
+    restart: always
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+      - DB_HOST=db
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Banco de Dados (Produção)
+  db:
+    image: mariadb:10.11
+    container_name: brasallis-db-prod
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - brasallis_db_prod:/var/lib/mysql
+    # Removido init.sql para evitar re-inicialização acidental em prod
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  brasallis_db_prod:

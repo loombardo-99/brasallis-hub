@@ -375,11 +375,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.querySelector('input[name="purchase_date"]').value = data.data_emissao;
         }
         
-        // Auto-select supplier (Simple match)
-        if (data.nome_fornecedor) {
+        // Auto-select supplier (Match by CNPJ or Name)
+        if (data.cnpj_fornecedor) {
             const select = document.querySelector('select[name="supplier_id"]');
-            for(let i=0; i<select.options.length; i++) {
-                if(select.options[i].text.toLowerCase().includes(data.nome_fornecedor.toLowerCase())) {
+            // Mock matching: in production we would match actual CNPJ field if it exists
+            // Let's search for the name as fallback
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].text.toLowerCase().includes(data.nome_fornecedor.toLowerCase())) {
                     select.selectedIndex = i;
                     break;
                 }

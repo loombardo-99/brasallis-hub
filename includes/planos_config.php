@@ -5,76 +5,68 @@ function get_planos_config() {
     return [
         // Define as funcionalidades e quais planos podem acessá-las
         'permissoes' => [
-            'processamento_ia' => ['essencial', 'enterprise'],
-            'relatorios_avancados' => ['essencial', 'enterprise'],
+            'processamento_ia' => ['growth', 'enterprise'],
+            'relatorios_avancados' => ['growth', 'enterprise'],
             'analise_lucratividade' => ['enterprise'],
             'previsao_demanda' => ['enterprise']
         ],
 
         // Define os limites para cada plano
         'limites' => [
-            'gratuito' => [
-                'produtos' => 50,
-                'fornecedores' => 10,
+            'iniciante' => [ // Plano MEI
+                'produtos' => 100,
+                'fornecedores' => 20,
                 'usuarios' => 1
             ],
-            'essencial' => [
-                'produtos' => 500,
-                'fornecedores' => 100,
-                'usuarios' => 5
+            'growth' => [ // Plano PME
+                'produtos' => 1000,
+                'fornecedores' => 200,
+                'usuarios' => 10
             ],
-            'enterprise' => [
-                'produtos' => PHP_INT_MAX, // Representa infinito
+            'enterprise' => [ // Plano Corporativo
+                'produtos' => PHP_INT_MAX,
                 'fornecedores' => PHP_INT_MAX,
                 'usuarios' => PHP_INT_MAX
-            ],
-            // Plano para quando o trial expira
-            'trial_expirado' => [
-                'produtos' => 0,
-                'fornecedores' => 0,
-                'usuarios' => 0
             ]
         ],
 
         // Detalhes dos planos para exibição
         'detalhes' => [
-            'gratuito' => [
-                'nome' => 'Plano Gratuito',
-                'preco' => ['valor' => 'R$ 0', 'periodicidade' => '/mês'],
-                'descricao' => 'Ideal para começar a organizar seu estoque sem custo.',
+            'iniciante' => [
+                'nome' => 'Plano MEI',
+                'preco' => ['valor' => 'R$ 49,90', 'periodicidade' => '/mês'],
+                'descricao' => 'Essencial para o microempreendedor organizar sua operação.',
                 'features' => [
-                    'Até 50 produtos',
-                    'Até 10 fornecedores',
-                    '1 usuário',
-                    'Relatórios básicos'
+                    'Até 100 produtos',
+                    'Até 20 fornecedores',
+                    '1 usuário administrativo',
+                    'Relatórios básicos de estoque'
                 ]
             ],
-            'essencial' => [
-                'nome' => 'Plano Essencial',
-                'preco' => ['valor' => 'R$ 119', 'periodicidade' => '/mês'],
-                'descricao' => 'Para negócios em crescimento que precisam de mais controle e automação.',
+            'growth' => [
+                'nome' => 'Plano PME',
+                'preco' => ['valor' => 'R$ 149,90', 'periodicidade' => '/mês'],
+                'descricao' => 'Inteligência e automação para empresas em plena expansão.',
                 'features' => [
-                    'Até 500 produtos',
-                    'Até 100 fornecedores',
-                    '5 usuários',
-                    'Processamento de Notas com IA',
-                    'Relatórios avançados'
+                    'Até 1000 produtos',
+                    'Até 200 fornecedores',
+                    '10 usuários simultâneos',
+                    'Entrada de Notas por IA',
+                    'Relatórios gerenciais avançados'
                 ]
             ],
             'enterprise' => [
-                'nome' => 'Plano Enterprise',
-                'preco' => ['valor' => 'Sob Consulta', 'periodicidade' => ''],
-                'descricao' => 'Soluções personalizadas para grandes empresas com necessidades complexas.',
+                'nome' => 'Plano Corporativo',
+                'preco' => ['valor' => 'R$ 499,90', 'periodicidade' => '/mês'],
+                'descricao' => 'Potência total e análise preditiva para grandes volumes.',
                 'features' => [
                     'Produtos e Fornecedores ilimitados',
                     'Usuários ilimitados',
-                    'Análise de Lucratividade',
+                    'Análise de Lucratividade em tempo real',
                     'Previsão de Demanda com IA',
-                    'Suporte prioritário 24/7',
-                    'Integrações customizadas'
+                    'Suporte prioritário 24/7'
                 ]
             ]
         ]
     ];
 }
-?>

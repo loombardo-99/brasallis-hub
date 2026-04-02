@@ -134,7 +134,7 @@ if ($is_logged_in) {
                             <i class="fas fa-server fa-2x text-primary me-3"></i>
                             <div>
                                 <strong>Base URL Principal</strong>
-                                <div class="font-monospace text-muted mt-1 select-all">http://seu-dominio.com/gerenciador_de_estoque/api/v1</div>
+                                <div class="font-monospace text-muted mt-1 select-all">http://seu-dominio.com/api/v1</div>
                             </div>
                         </div>
                     </div>
@@ -248,7 +248,7 @@ if ($is_logged_in) {
     echo '</div>'; // Close container
     echo '<footer class="bg-white border-top py-4 mt-5">
             <div class="container text-center text-muted small">
-                <p class="mb-0">&copy; ' . date('Y') . ' WiseFlow. API Documentation.</p>
+                <p class="mb-0">&copy; ' . date('Y') . ' Brasallis. API Documentation.</p>
                 <a href="index.php" class="text-decoration-none mt-2 d-inline-block">Voltar para Home</a>
             </div>
           </footer>';

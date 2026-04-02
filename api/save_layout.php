@@ -15,9 +15,9 @@ if (!isset($_SESSION['user_id'])) {
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 
-if (!isset($data['widgets']) || !is_array($data['widgets'])) {
+if (!isset($data['row1']) && !isset($data['row2'])) {
     http_response_code(400);
-    echo json_encode(['error' => 'Invalid data format']);
+    echo json_encode(['error' => 'Invalid data format. Expected row1 or row2 keys.']);
     exit;
 }
 

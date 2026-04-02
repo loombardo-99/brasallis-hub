@@ -41,7 +41,7 @@ if ($products) {
     foreach ($products as $p) {
         $results['Produtos'][] = [
             'name' => $p['name'],
-            'url' => '/gerenciador_de_estoque/admin/produtos.php?search=' . urlencode($p['name'])
+            'url' => '/admin/produtos.php?search=' . urlencode($p['name'])
         ];
     }
 }
@@ -55,7 +55,7 @@ if ($suppliers) {
     foreach ($suppliers as $s) {
         $results['Fornecedores'][] = [
             'name' => $s['name'],
-            'url' => '/gerenciador_de_estoque/admin/fornecedores.php' 
+            'url' => '/admin/fornecedores.php' 
         ];
     }
 }
@@ -70,7 +70,7 @@ if ($_SESSION['user_type'] === 'admin') {
         foreach ($users as $u) {
             $results['Usuários'][] = [
                 'name' => $u['username'],
-                'url' => '/gerenciador_de_estoque/admin/usuarios.php'
+                'url' => '/admin/usuarios.php'
             ];
         }
     }

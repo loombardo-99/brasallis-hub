@@ -43,6 +43,9 @@ class AuthController {
                     $_SESSION['empresa_id'] = $user['empresa_id'];
                     $_SESSION['user_plan'] = $user['plan'];
 
+                    // Regenerate session ID for security
+                    session_regenerate_id(true);
+
                     // --- CARREGAR BRANDING DA EMPRESA ---
                     $stmtBranding = $this->pdo->prepare("SELECT branding_primary_color, branding_secondary_color, branding_bg_style FROM empresas WHERE id = ?");
                     $stmtBranding->execute([$user['empresa_id']]);
@@ -60,11 +63,9 @@ class AuthController {
 
                     // Carregar Permissões
                     $permMap = [];
-                    // Se for admin, acesso total (hack temporário até tudo ser migrado)
                     if ($user['user_type'] === 'admin') {
                         $_SESSION['permissions'] = 'all'; 
                     } else {
-                        // Permissions: Load from ROLE (Cargo) not Sector
                         if ($_SESSION['cargo_id']) {
                             $stmtPerms = $this->pdo->prepare("
                                 SELECT m.slug, pc.nivel_acesso
@@ -77,11 +78,6 @@ class AuthController {
                                 $permMap[$row['slug']] = $row['nivel_acesso'];
                             }
                         }
-                        
-                        // Fallback: If no role or no permissions found, try sector legacy permissions (Migration Phase)
-                        // Or just leave empty if strictly RBAC. Let's start strictly RBAC for consistency.
-                        // If they have no role, they have no permissions unless Admin.
-                        
                         $_SESSION['permissions'] = $permMap;
                     }
 
@@ -91,33 +87,10 @@ class AuthController {
                     } elseif ($user['user_type'] === 'admin') {
                         header('Location: admin/painel_admin.php');
                     } else {
-                        // Funcionário: Verifica Smart Redirect (Acesso Direto) ou Setor
-                        $perms = $_SESSION['permissions'] ?? [];
-                        if (is_array($perms) && count($perms) === 1) {
-                             $slug = array_key_first($perms);
-                             $redirect = '';
-                             
-                             switch($slug) {
-                                 case 'pdv': $redirect = 'modules/pdv/views/index.php'; break;
-                                 case 'rh': $redirect = 'modules/rh/views/index.php'; break;
-                                 case 'fiscal': $redirect = 'modules/fiscal/views/index.php'; break;
-                                 case 'financeiro': $redirect = 'modules/financeiro/views/index.php'; break;
-                                 // Estoque usually has multiple sub-pages, so maybe keep dashboard? 
-                                 // But if user wants direct, maybe products? Let's stick to Dashboard for complex modules 
-                                 // unless explicitly requested.
-                             }
-
-                             if ($redirect) {
-                                 header("Location: $redirect");
-                                 exit();
-                             }
-                        }
-
-                        // Fallback padrão
+                        // Employee logic: Check for setor_id to redirect to proper dashboard
                         if (!empty($_SESSION['setor_id'])) {
                             header('Location: admin/setor_dashboard.php?id=' . $_SESSION['setor_id']);
                         } else {
-                            // Fallback caso não tenha setor definido
                             header('Location: admin/dashboard_funcionario.php'); 
                         }
                     }
@@ -134,7 +107,6 @@ class AuthController {
             error_log("Erro de login: " . $e->getMessage());
         }
 
-        // Se houver erro, renderiza a view com a mensagem
         require __DIR__ . '/../../views/login.php';
     }
 
@@ -147,34 +119,26 @@ class AuthController {
 
     public function register() {
         if (session_status() === PHP_SESSION_NONE) session_start();
-        
-        $planos_validos = ['free', 'growth', 'enterprise'];
-        $plano_selecionado = (isset($_GET['plan']) && in_array($_GET['plan'], $planos_validos)) ? $_GET['plan'] : 'free';
-        
+        $planos_validos = ['iniciante', 'growth', 'enterprise'];
+        $plano_selecionado = (isset($_GET['plan']) && in_array($_GET['plan'], $planos_validos)) ? $_GET['plan'] : 'iniciante';
         $error_message = $_SESSION['error_message'] ?? '';
         $form_data = $_SESSION['form_data'] ?? [];
-        
-        // Limpa mensagens após leitura
         unset($_SESSION['error_message'], $_SESSION['form_data']);
-
         require __DIR__ . '/../../views/auth/register.php';
     }
 
     public function store($data) {
         if (session_status() === PHP_SESSION_NONE) session_start();
 
-        // 1. Sanitizar
         $company_name = $this->sanitize_input($data['company_name'] ?? '');
         $username = $this->sanitize_input($data['username'] ?? '');
         $email = $this->sanitize_input($data['email'] ?? '');
         $password = $this->sanitize_input($data['password'] ?? '');
         $confirm_password = $this->sanitize_input($data['confirm_password'] ?? '');
-        $plano_selecionado = $data['plan'] ?? 'free';
+        $plano_selecionado = $data['plan'] ?? 'iniciante';
 
-        // Armazena para repopular
         $_SESSION['form_data'] = $data;
 
-        // Validar
         if (empty($company_name) || empty($username) || empty($email) || empty($password)) {
             $_SESSION['error_message'] = 'Todos os campos são obrigatórios.';
             header('Location: register.php?plan=' . $plano_selecionado);
@@ -187,11 +151,11 @@ class AuthController {
             exit();
         }
 
-        // Configurações
-        $ai_plan_db = 'free'; 
-        $ai_token_limit = 100000;
-        $max_users = 1; /* Free limit */
-        $support_level = 'community';
+        // Configurações iniciais com base no plano
+        $ai_plan_db = $plano_selecionado; 
+        $ai_token_limit = ($plano_selecionado === 'enterprise') ? 5000000 : (($plano_selecionado === 'growth') ? 1000000 : 200000);
+        $max_users = ($plano_selecionado === 'enterprise') ? 999 : (($plano_selecionado === 'growth') ? 10 : 1);
+        $support_level = ($plano_selecionado === 'enterprise') ? 'dedicated' : (($plano_selecionado === 'growth') ? 'priority' : 'community');
 
         try {
             $this->pdo->beginTransaction();
@@ -209,8 +173,8 @@ class AuthController {
 
             // Insert User
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $this->pdo->prepare("INSERT INTO usuarios (empresa_id, username, email, password, user_type) VALUES (?, ?, ?, ?, 'admin')");
-            $stmt->execute([$empresa_id, $username, $email, $hashed_password]);
+            $stmt = $this->pdo->prepare("INSERT INTO usuarios (empresa_id, username, email, password, user_type, plan) VALUES (?, ?, ?, ?, 'admin', ?)");
+            $stmt->execute([$empresa_id, $username, $email, $hashed_password, $ai_plan_db]);
             $user_id = $this->pdo->lastInsertId();
 
             // Update Empresa owner
@@ -220,28 +184,24 @@ class AuthController {
             $this->pdo->commit();
             unset($_SESSION['form_data']);
 
-            // Login
             $_SESSION['user_id'] = $user_id;
             $_SESSION['username'] = $username;
             $_SESSION['user_type'] = 'admin';
             $_SESSION['empresa_id'] = $empresa_id;
-            $_SESSION['ai_plan'] = $ai_plan_db;
+            $_SESSION['user_plan'] = $ai_plan_db;
 
-            // Redirect
             if ($plano_selecionado === 'growth' || $plano_selecionado === 'enterprise') {
-                $_SESSION['message'] = 'Conta criada! Complete sua assinatura.';
+                $_SESSION['message'] = "Conta criada! Aproveite seus 15 dias de teste grátis no {$plano_selecionado}.";
                 $_SESSION['message_type'] = 'info';
-                header('Location: admin/checkout.php?plan=' . $plano_selecionado);
             } else {
-                $_SESSION['message'] = 'Sua conta foi criada com sucesso!';
+                $_SESSION['message'] = 'Sua conta foi criada! Bem-vindo ao Plano MEI.';
                 $_SESSION['message_type'] = 'success';
-                header('Location: admin/painel_admin.php');
             }
+            header('Location: admin/painel_admin.php');
             exit();
 
         } catch (PDOException $e) {
             if ($this->pdo->inTransaction()) $this->pdo->rollBack();
-            
             $_SESSION['error_message'] = ($e->getCode() == 23000) ? 'O e-mail informado já está em uso.' : 'Erro ao criar conta.';
             header('Location: register.php?plan=' . $plano_selecionado);
             exit();

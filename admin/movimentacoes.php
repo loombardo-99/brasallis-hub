@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Fetch Log
 $stmt = $conn->prepare("
-    SELECT h.*, p.name as produto, u.nome as usuario 
+    SELECT h.*, p.name as produto, u.username as usuario 
     FROM historico_estoque h
     JOIN produtos p ON h.product_id = p.id
     LEFT JOIN usuarios u ON h.user_id = u.id

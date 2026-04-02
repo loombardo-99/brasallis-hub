@@ -3,68 +3,76 @@
    ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
 
+/* Global Brand Utilities */
+.brightness-inverted {
+    filter: brightness(0) invert(1) contrast(100%);
+    opacity: 0.9;
+}
+.sidebar .brightness-inverted {
+    opacity: 0.9;
+}
+.sidebar .brightness-inverted:hover {
+    opacity: 1;
+}
+
 :root {
-    /* --- POOL DE CORES NEUTRAS (Slate/Zinc) --- */
-    --slate-50: #f8fafc;
-    --slate-100: #f1f5f9;
-    --slate-200: #e2e8f0;
-    --slate-300: #cbd5e1;
-    --slate-400: #94a3b8;
-    --slate-500: #64748b;
-    --slate-600: #475569;
-    --slate-700: #334155;
-    --slate-800: #1e293b;
-    --slate-900: #0f172a;
-    --slate-950: #020617;
+    /* --- PALETA GOOGLE DESIGN (Material 3) --- */
+    --g-blue: #1a73e8;
+    --g-red: #ea4335;
+    --g-yellow: #fbbc05;
+    --g-green: #34a853;
+    
+    --slate-50: #f8f9fa; /* Google White */
+    --slate-100: #f1f3f4;
+    --slate-200: #e8eaed;
+    --slate-300: #dadce0;
+    --slate-400: #bdc1c6;
+    --slate-500: #9aa0a6;
+    --slate-600: #80868b;
+    --slate-700: #5f6368;
+    --slate-800: #3c4043;
+    --slate-900: #202124;
 
-    /* --- CORES DE MARCA --- */
-    --primary: #2563eb;
-    /* Azul Royal */
-    --primary-hover: #1d4ed8;
-    --primary-light: #eff6ff;
-    /* Fundo bem claro para hover/active */
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --info: #0ea5e9;
+    /* --- MARCA & SEMÂNTICA --- */
+    --primary: var(--g-blue);
+    --primary-hover: #1765cc;
+    --primary-light: #e8f0fe;
+    --success: var(--g-green);
+    --warning: var(--g-yellow);
+    --danger: var(--g-red);
+    --info: #12b5cb;
 
-    /* --- DIMENSÕES & SOMBRAS (Estilo Apple/Google) --- */
+    /* --- DIMENSÕES & ELEVAÇÃO (M3 Evoluído) --- */
+    --sidebar-collapsed-width: 76px;
     --sidebar-width: 280px;
-    --header-height: 70px;
+    --header-height: 72px;
     --radius-card: 20px;
-    /* Increased for modern feel */
     --radius-btn: 12px;
     --radius-input: 12px;
 
-    /* Sombras Premium (Suaves e em camadas) */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+    /* Glassmorphism Tokens */
+    --glass-bg: rgba(15, 23, 42, 0.85); /* Deep Navy Glass */
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --glass-blur: 24px;
+    --glass-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.4);
 
-    /* Glassmorphism Variables */
-    --glass-bg: rgba(255, 255, 255, 0.7);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.2);
-    --glass-blur: blur(16px);
+    /* Sombras Google (Extremamente sutis) */
+    --shadow-sm: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+    --shadow-md: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+    --shadow-lg: 0 4px 8px 3px rgba(60, 64, 67, 0.15), 0 1px 3px 0 rgba(60, 64, 67, 0.3);
 
-    /* Tipografia Fluida (Escala Apple-style) */
-    --fs-xs: clamp(0.7rem, 0.65rem + 0.25vw, 0.8rem);
-    --fs-sm: clamp(0.8rem, 0.75rem + 0.25vw, 0.9rem);
-    --fs-base: clamp(0.9rem, 0.85rem + 0.25vw, 1rem);
-    --fs-lg: clamp(1.1rem, 1rem + 0.5vw, 1.25rem);
-    --fs-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
-    --fs-2xl: clamp(1.5rem, 1.35rem + 0.75vw, 2rem);
+    /* Tipografia (Google Sans feel) */
+    --fs-xs: 0.75rem;
+    --fs-sm: 0.875rem;
+    --fs-base: 1rem;
+    --fs-lg: 1.125rem;
+    --fs-xl: 1.375rem;
+    --fs-2xl: 1.75rem;
 
-    /* Transições Profissionais */
-    --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-
-    /* --- BOOTSTRAP 5 OVERRIDES (Bridge) --- */
+    /* --- BOOTSTRAP 5 OVERRIDES --- */
     --bs-primary: var(--primary);
-    --bs-primary-rgb: 37, 99, 235;
-    /* Fallback safe */
-    --bs-body-bg: var(--bg-body);
-    --bs-body-color: var(--text-main);
+    --bs-body-bg: var(--slate-50);
+    --bs-body-color: var(--slate-900);
 }
 
 /* Force Bootstrap components to respect our variables if they don't use the vars above */
@@ -82,14 +90,14 @@
 /* 1. Mobile Sidebar Drawer & Overlay */
 #sidebar-overlay {
     position: fixed;
-    top: 0;
+    top: var(--header-height);
     left: 0;
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - var(--header-height));
     background-color: rgba(15, 23, 42, 0.6);
     /* Navy/Dark backdrop */
-    z-index: 1040;
-    /* Abaixo da sidebar (1045), acima do conteudo */
+    z-index: 1040 !important;
+    /* Abaixo da sidebar (1045), mas sob a navbar (1050) */
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -101,91 +109,9 @@
     visibility: visible;
 }
 
-@media (max-width: 991.98px) {
-    .sidebar {
-        /* Mobile Drawer Specs */
-        position: fixed;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        width: 85vw;
-        /* Largura confortável */
-        max-width: 320px;
-        z-index: 1045;
-        background-color: var(--bg-sidebar);
-        padding-top: 0;
-        /* Header já tem padding */
-
-        /* Estado inicial escondido */
-        transform: translateX(-100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: none;
-        border-right: none;
-    }
-
-    body.sidebar-open .sidebar {
-        transform: translateX(0);
-        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.3);
-        /* Sombra profunda */
-    }
-
-    body.sidebar-open {
-        overflow: hidden;
-    }
-
-    /* --- MOBILE TILES (Botões Grandes) --- */
-    .sidebar .nav-link-item,
-    .sidebar .nav-link-collapse {
-        padding: 16px 20px;
-        /* Mais alto para toque */
-        margin-bottom: 8px;
-        border-radius: 16px;
-        /* Bem arredondado (Apple style) */
-        background-color: rgba(255, 255, 255, 0.03);
-        /* Fundo sutil */
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    .sidebar .nav-link-item:active,
-    .sidebar .nav-link-collapse:active {
-        transform: scale(0.98);
-        /* Feedback tátil visual */
-        background-color: rgba(255, 255, 255, 0.08);
-    }
-
-    .sidebar .icon-wrapper {
-        width: 32px;
-        /* Ícone maior */
-        font-size: 1.2rem;
-        color: var(--primary);
-        /* Destaque no ícone */
-    }
-
-    .sidebar .text-wrapper {
-        font-size: 1.05rem;
-        /* Texto maior */
-        font-weight: 600;
-    }
-
-    /* Ajuste do Header da Sidebar no Mobile */
-    .sidebar-header {
-        padding: 24px 20px !important;
-        margin-bottom: 10px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
-    /* Subitens (Accordion) no Mobile */
-    .nav-sub-items {
-        padding-left: 10px;
-    }
-
-    .nav-sub-link {
-        padding: 12px 16px;
-        font-size: 1rem;
-        border-radius: 12px;
-        margin-bottom: 4px;
-    }
-}
+/* 1. Universal Sidebar (Integrada) */
+/* 1. Universal Sidebar (Integrada) */
+/* --- LEGACY NAVIGATION REMOVED (Migrated to navigation-hub.css) --- */
 
 /* 2. Mobile Data Tables -> Card View Overlay */
 @media (max-width: 768px) {
@@ -388,64 +314,26 @@ body {
     overflow-x: hidden;
 }
 
-/* Transição de Layout e Centralização */
-main,
-.navbar {
-    transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-left: 0;
-    width: 100%;
+/* Main Content Adjustment for Drawer Sidebar */
+main, .navbar {
+    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    margin-left: var(--sidebar-collapsed-width);
+    width: calc(100% - var(--sidebar-collapsed-width));
 }
 
-/* Container Principal - Otimizado para Organização e Foco */
-main {
-    padding-top: calc(var(--header-height) + clamp(1rem, 5vw, 2rem));
-    padding-left: clamp(1rem, 3vw, 2.5rem);
-    padding-right: clamp(1rem, 3vw, 2.5rem);
-    padding-bottom: 2rem;
-    min-height: 100vh;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    /* Centralização no sistema */
+body.sidebar-open main, body.sidebar-open .navbar {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
 }
 
-/* Área de Conteúdo Limitada (evita dispersão em telas ultra-wide) */
-main>.container-fluid {
-    width: 100%;
-    max-width: 1600px;
-    /* Limite Apple-style para foco visual */
-    margin: 0 auto;
-    padding: 0 !important;
-    /* Reset de padding do Bootstrap para usar o do main */
-}
-
-@media (max-width: 768px) {
-    main {
-        padding-top: calc(var(--header-height) + 1rem);
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-    }
-
-    .container-fluid {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
+@media (max-width: 991.98px) {
+    main, .navbar {
+        margin-left: 0 !important;
+        width: 100% !important;
     }
 }
 
-/* Desktop Sidebar Offset */
-@media (min-width: 992px) {
-
-    main,
-    .navbar {
-        margin-left: var(--sidebar-width);
-    }
-
-    .navbar {
-        width: calc(100% - var(--sidebar-width));
-    }
-}
+/* Desktop Sidebar Offset - Removido para funcionar como Drawer Overlay em todas as telas */
 
 /* Ajustes Específicos para Resoluções Intermediárias (Tablets/Laptops Pequenos) */
 @media (min-width: 768px) and (max-width: 1100px) {
@@ -461,213 +349,135 @@ main>.container-fluid {
     }
 }
 
-/* --- NAVBAR (HEADER) --- */
-.navbar,
-.glass-navbar,
-.topbar {
-    background-color: var(--bg-header) !important;
-    border-bottom: 1px solid var(--border-header) !important;
-    box-shadow: var(--shadow-sm) !important;
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    z-index: 1050;
-    /* Aumentado para ficar ACIMA da sidebar no mobile */
-    height: var(--header-height);
+
+
+
+
+/* --- STATUS INDICATORS --- */
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+.status-dot.ok { background-color: #22c55e; }
+.status-dot.low { background-color: #f59e0b; }
+.status-dot.out { background-color: #ef4444; }
+
+/* --- GLOBAL SEARCH UI --- */
+.global-search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
 }
 
-/* --- SIDEBAR STRUCTURE (FLEXBOX) --- */
-.sidebar {
-    background-color: var(--bg-sidebar) !important;
-    border-right: var(--border-sidebar) !important;
-    width: var(--sidebar-width) !important;
-    height: 100vh;
-    padding-top: 0;
-    position: fixed;
-    top: 0;
+#globalSearchResults {
+    position: absolute;
+    top: calc(100% + 10px);
     left: 0;
-    z-index: 1045;
-    display: flex;
-    flex-direction: column;
-    /* Force Stack */
-    transition: var(--transition-base);
-    overflow: hidden;
-    /* No scroll on container */
-}
-
-/* Header (Fixed height) */
-.sidebar-header {
-    height: 60px;
-    flex-shrink: 0;
-}
-
-/* Scrollable Content (Flex Grow) */
-.sidebar-content {
-    flex: 1;
+    right: 0;
+    z-index: 1100;
+    max-height: 400px;
     overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: 20px;
-    scrollbar-width: thin;
-    /* Firefox */
+    background: var(--bg-card);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-card);
+    display: none;
 }
 
-.sidebar-content::-webkit-scrollbar {
-    width: 4px;
-}
-
-.sidebar-content::-webkit-scrollbar-thumb {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-}
-
-/* Footer (Fixed at Bottom) */
-.sidebar-footer {
-    flex-shrink: 0;
-    background-color: rgba(0, 0, 0, 0.1);
-    /* Subtle separation */
-}
-
-/* --- HIGH DENSITY ITEMS (Google/Apple) --- */
-.sidebar .nav-link-item,
-.sidebar .nav-link-collapse {
-    color: var(--text-sidebar) !important;
-    border-radius: 6px;
-    margin: 1px 8px;
-    /* Tight */
-    padding: 6px 12px;
-    /* 32px height target */
-    font-size: 13.5px;
-    /* Refined size */
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    transition: all 0.15s ease;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    min-height: 32px;
-}
-
-.sidebar .nav-link-item:hover,
-.sidebar .nav-link-collapse:hover {
-    color: var(--text-sidebar-hover) !important;
-    background-color: var(--bg-sidebar-hover) !important;
-}
-
-/* Active State - Pill with Indicator */
-.sidebar .nav-link-item.active {
-    background-color: rgba(37, 99, 235, 0.15) !important;
-    color: #60a5fa !important;
-    font-weight: 600;
-}
-
-.sidebar .icon-wrapper {
-    width: 20px;
-    display: flex;
-    justify-content: center;
-    margin-right: 10px;
-    opacity: 0.8;
-    font-size: 14px;
-    /* Smaller Icons */
-}
-
-.sidebar-heading {
-    color: var(--text-muted) !important;
-    font-size: 11px;
-    /* Micro-label */
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+.search-result-category {
     font-weight: 700;
-    padding: 16px 12px 6px 20px;
-    /* Spacing */
+    color: var(--primary);
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: var(--bg-body);
+}
+
+/* --- SIDEBAR REFINEMENTS --- */
+.chevron-icon {
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
     opacity: 0.5;
 }
-
-/* Expanded Text (Hide when collapsed) */
-body.sidebar-collapsed .sidebar-content .text-wrapper,
-body.sidebar-collapsed .sidebar-content .sidebar-heading,
-body.sidebar-collapsed .sidebar-content .chevron-icon,
-body.sidebar-collapsed .sidebar-footer .text-wrapper {
-    display: none !important;
+.nav-link-collapse[aria-expanded="true"] .chevron-icon {
+    transform: rotate(180deg);
 }
 
-/* Collapsed Alignment */
-body.sidebar-collapsed .sidebar .nav-link-item,
-body.sidebar-collapsed .sidebar .nav-link-collapse {
-    justify-content: center;
-    padding: 10px 0;
+.sidebar-nav .nav-group {
+    margin: 4px 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    transition: all 0.3s ease;
 }
 
-/* FIX: Shrink Sidebar Width on Desktop */
-@media (min-width: 992px) {
-    body.sidebar-collapsed .sidebar {
-        width: 80px !important;
-    }
-
-    body.sidebar-collapsed main,
-    body.sidebar-collapsed .navbar {
-        margin-left: 80px !important;
-        width: calc(100% - 80px) !important;
-    }
-
-    body.sidebar-collapsed .sidebar-header {
-        justify-content: center;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-    }
-
-    body.sidebar-collapsed .sidebar-header .brand-text {
-        display: none !important;
-    }
-
-    /* Strict Icon Centering */
-    body.sidebar-collapsed .sidebar .nav-link-item,
-    body.sidebar-collapsed .sidebar .nav-link-collapse {
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        justify-content: center !important;
-        width: 100%;
-    }
-
-    body.sidebar-collapsed .sidebar .icon-wrapper {
-        margin-right: 0 !important;
-        margin-left: 0 !important;
-        width: 100% !important;
-        /* Center via flex container */
-        display: flex;
-        justify-content: center;
-    }
+body.sidebar-open .sidebar-nav .nav-group {
+    margin: 4px 12px;
+    background: rgba(255, 255, 255, 0.05);
 }
 
-/* FIX: Mobile Sidebar Z-Index (Above Navbar) */
-@media (max-width: 991.98px) {
-    .sidebar {
-        z-index: 1060 !important;
-        /* Above Navbar (1050) */
-    }
-}
-
-/* --- SIDEBAR TOGGLE (TAB STYLE) --- */
-.sidebar-toggle-tab {
-    position: fixed;
-    top: 60px;
-    /* Below header */
-    left: var(--sidebar-width);
-    width: 20px;
-    height: 40px;
-    background-color: var(--bg-sidebar);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-left: none;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    color: var(--text-muted);
+/* AI Pulse Button */
+.btn-ai-pulse {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
-    z-index: 1040;
-    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.1);
+    transition: all 0.3s ease;
 }
+
+.btn-ai-pulse::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 50%;
+    border: 1.5px solid var(--primary);
+    animation: ping-ai 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+@keyframes ping-ai {
+    75%, 100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* --- DASHBOARD COMPONENTS --- */
+.card-dashboard {
+    border: none;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--bg-card);
+}
+.card-dashboard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.icon-shape {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1.1rem;
+}
+.bg-primary-light { background-color: var(--primary-soft); color: var(--primary); }
+.bg-success-light { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; }
+.bg-warning-light { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.bg-danger-light { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+
 
 .sidebar-toggle-tab:hover {
     color: var(--primary);
@@ -1045,3 +855,131 @@ body.sidebar-collapsed .navbar {
 .btn-light:hover {
     background-color: var(--border-card) !important;
 }
+
+/* --- UNIFICAÇÃO DE BRANDING (Prevenção de Duplicidade) --- */
+
+/* Esconde qualquer marca secundária se o logo principal estiver presente */
+.navbar-brand + .navbar-brand,
+.topbar .navbar-brand + .navbar-brand {
+    display: none !important;
+}
+
+/* Sidebar Header is now used for the AI Hub and Search */
+.sidebar .sidebar-header {
+    display: flex !important;
+}
+
+/* Evita que duas Navbars/Topbars apareçam simultaneamente */
+.navbar + .topbar,
+.topbar + .navbar,
+.navbar + .navbar,
+.topbar + .topbar {
+    display: none !important;
+}
+
+/* Ajuste de alinhamento para o padrão Google (Logo ao lado do Menu) */
+.navbar-brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+    text-decoration: none !important;
+    padding-left: 0.5rem !important;
+}
+
+.brand-text {
+    font-weight: 700 !important;
+    letter-spacing: -0.01em !important;
+    color: var(--primary) !important;
+}
+
+/* --- NEW SIDEBAR HUB ELEMENTS --- */
+.sidebar-header {
+    padding-top: 24px !important;
+    margin-bottom: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding-bottom: 20px !important;
+}
+
+.btn-ai-hub {
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 14px !important;
+    background: linear-gradient(135deg, #6366f1, #a855f7) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3) !important;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.btn-ai-hub:hover {
+    transform: scale(1.1) rotate(8deg);
+}
+
+.search-trigger-sidebar {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.4) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+/* --- SUB-ITEMS REFINEMENT --- */
+.nav-sub-items {
+    padding: 0;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar:hover .nav-sub-items {
+    opacity: 1;
+}
+
+.nav-sub-link {
+    color: rgba(255, 255, 255, 0.5) !important;
+    padding: 8px 30px !important;
+    font-size: 0.85rem;
+    display: flex;
+}
+
+/* --- MOBILE BOTTOM NAVIGATION --- */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    height: 72px;
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 2000;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+}
+
+.mobile-bottom-nav i { font-size: 1.3rem; }
+.mobile-ai-trigger { position: relative; top: -24px; }
+.ai-orb {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #a855f7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #0f172a;
+}
+

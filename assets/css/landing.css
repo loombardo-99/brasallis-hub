@@ -236,27 +236,31 @@ h6 {
     }
 }
 
-/* Navbar Trust */
+/* Navbar Trust - Dark Adaptation */
 .navbar-trust {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--sys-border);
-    padding: 15px 0;
+    background: rgba(3, 7, 18, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 0;
+    transition: all 0.3s ease;
 }
 
 .navbar-trust .nav-link {
-    color: var(--sys-text-secondary);
-    font-weight: 500;
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
 }
 
-.navbar-trust .nav-link:hover {
-    color: var(--sys-navy);
+.navbar-trust .nav-link:hover, 
+.navbar-trust .nav-link.active {
+    color: var(--u-accent, #10b981) !important;
 }
 
 .navbar-trust .navbar-brand {
     font-family: 'Outfit', sans-serif;
-    color: var(--sys-navy) !important;
-    font-weight: 700;
+    font-weight: 800;
 }
 
 /* Interactive Tabs */

@@ -71,6 +71,35 @@ Um sistema web completo para gerenciamento de estoque, produtos, compras e relat
 3.  **Cadastro de Nova Empresa:** Clique em "Não tem uma conta? Crie uma agora" na página de login para registrar sua empresa e seu primeiro usuário administrador.
 4.  **Login:** Utilize o e-mail e senha cadastrados para acessar o sistema.
 
+### 3. Executando o Sistema para Testes Manuais
+
+Existem duas formas práticas de rodar o sistema localmente em ambiente de testes ou desenvolvimento sem precisar configurar um servidor como o XAMPP manualmente:
+
+#### Opção A: Usando Docker (Recomendado)
+O projeto já conta com um esquema de containers configurado (`docker-compose.yml`) que cria automaticamente o servidor web com PHP, o banco de dados MariaDB e carrega o database inicial (`dump_real.sql.sql`).
+
+1. Certifique-se de ter o [Docker Desktop](https://www.docker.com/) instalado e rodando em sua máquina.
+2. Abra o terminal (Prompt de Comando ou PowerShell) e navegue até a pasta raiz do projeto (`gerenciador_de_estoque`).
+3. Suba os containers rodando:
+   ```bash
+   docker-compose up -d
+   ```
+4. Acesse o sistema no seu navegador pelo endereço: **`http://localhost:8001`**
+5. *(Opcional)* O painel do PHPMyAdmin para visualizar o banco estará em: `http://localhost:8080`
+6. Para parar o ambiente após os testes, execute: `docker-compose down`
+
+#### Opção B: Usando o Servidor Embutido do PHP
+Se você não usa Docker, mas tem o PHP e o MySQL (via XAMPP ou independente) rodando localmente.
+
+1. Finalize a criação e configuração do banco de dados (conforme o *Passo 1* acima).
+2. Abra o terminal na pasta raiz do projeto (`gerenciador_de_estoque`).
+3. Inicie o servidor embutido do PHP escolhendo uma porta, por exemplo, a 8000:
+   ```bash
+   php -S localhost:8000
+   ```
+4. Acesse o sistema diretamente na raiz: **`http://localhost:8000`**
+5. Pressione `Ctrl + C` no terminal para encerrar o teste manual.
+
 ## Estrutura do Projeto
 
 ```

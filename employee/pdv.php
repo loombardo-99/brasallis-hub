@@ -57,13 +57,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cart_data'])) {
                 $item_stmt->execute([$venda_id, $product_id, $quantity, $unit_price]);
                 $update_stmt->execute([$quantity, $product_id, $empresa_id]);
                 $history_stmt->execute([$empresa_id, $product_id, $user_id, $quantity, $venda_id]);
-                $history_stmt->execute([$empresa_id, $product_id, $user_id, $quantity, $venda_id]);
             }
 
             // 4. Integração Fiscal Automática
             require_once __DIR__ . '/../src/Services/FiscalIntegrator.php';
             $fiscalService = new \App\Services\FiscalIntegrator($conn);
             $fiscalService->createFromSale($venda_id, $empresa_id, $user_id);
+
+            // 5. Integração com Financeiro (Contas a Receber)
+            $statusReceber = ($payment_method === 'dinheiro' || $payment_method === 'pix' || $payment_method === 'debito') ? 'recebido' : 'pendente';
+            $dataRecebimento = ($statusReceber === 'recebido') ? 'CURDATE()' : 'NULL';
+            
+            $sqlFin = "INSERT INTO contas_receber (empresa_id, descricao, valor, data_vencimento, data_recebimento, status, venda_id) 
+                       VALUES (?, ?, ?, CURDATE(), $dataRecebimento, ?, ?)";
+            $stmtFin = $conn->prepare($sqlFin);
+            $stmtFin->execute([$empresa_id, "Venda PDV #$venda_id", $total_amount, $statusReceber, $venda_id]);
 
             $conn->commit();
             $_SESSION['last_venda_id'] = $venda_id; // Guarda o ID da última venda na sessão
@@ -95,66 +103,182 @@ if (isset($_SESSION['last_venda_id'])) {
 ?>
 
 <style>
-    #search-results { max-height: 300px; overflow-y: auto; position: absolute; background: white; width: 100%; z-index: 1000; }
-    .cart-item-row:hover { background-color: #f8f9fa; }
-    #reader { width: 100%; border: 2px solid #f8f9fa; border-radius: 8px; }
-    .payment-method-btn { flex: 1; }
+    :root {
+        --trust-navy: #0A2647;
+        --trust-blue: #144272;
+        --trust-accent: #205295;
+        --trust-light: #F8F9FA;
+    }
+
+    body { background-color: #f4f7fa; }
+    
+    .card-premium {
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+    .btn-trust {
+        background-color: var(--trust-navy);
+        color: white;
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 12px 24px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-trust:hover {
+        background-color: var(--trust-blue);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .pdv-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .search-pill {
+        border-radius: 50px !important;
+        padding-left: 20px;
+        border: 1px solid #dee2e6;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    }
+
+    #search-results {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-top: 8px;
+    }
+
+    .cart-summary {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        border: 2px solid #eef2f7;
+    }
+
+    .total-amount {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: var(--trust-navy);
+    }
+
+    .payment-method-btn {
+        border-radius: 12px;
+        padding: 15px;
+        border: 2px solid #eef2f7;
+        transition: all 0.2s;
+        flex: 1;
+        text-align: center;
+        background: white;
+    }
+
+    .payment-method-btn.active {
+        border-color: var(--trust-navy);
+        background-color: rgba(10, 38, 71, 0.05);
+        font-weight: bold;
+    }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="mb-0">PDV - Ponto de Venda</h1>
-</div>
-
-<?php if (isset($_SESSION['message'])) : ?>
-    <div class="alert alert-<?php echo $_SESSION['message_type']; ?> alert-dismissible fade show" role="alert">
-        <?php echo $_SESSION['message']; ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<div class="pdv-container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold text-navy mb-1"><i class="fas fa-cash-register me-2"></i>PDV Profissional</h1>
+            <p class="text-muted small">Caixa Aberto: <?= date('d/m/Y H:i') ?></p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-success-light text-success px-3 py-2 rounded-pill">Sistema Online</span>
+        </div>
     </div>
-    <?php unset($_SESSION['message']); unset($_SESSION['message_type']); ?>
-<?php endif; ?>
 
-<div class="row">
-    <!-- Coluna da Esquerda: Busca e Resultados -->
-    <div class="col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-header"><h5 class="mb-0">Buscar Produto</h5></div>
-            <div class="card-body">
-                <div class="position-relative">
-                    <div class="input-group">
-                        <input type="text" id="product-search" class="form-control" placeholder="Digite o nome ou SKU...">
-                        <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal" data-bs-target="#scannerModal"><i class="fas fa-barcode"></i></button>
+    <?php if (isset($_SESSION['message'])) : ?>
+        <div class="alert alert-<?php echo $_SESSION['message_type']; ?> border-0 shadow-sm alert-dismissible fade show mb-4" role="alert">
+            <i class="fas fa-info-circle me-2"></i><?php echo $_SESSION['message']; ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <?php unset($_SESSION['message']); unset($_SESSION['message_type']); ?>
+    <?php endif; ?>
+
+    <div class="row g-4">
+        <!-- Coluna da Esquerda: Busca -->
+        <div class="col-lg-7">
+            <div class="card card-premium mb-4">
+                <div class="card-body p-4">
+                    <div class="position-relative">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-white border-end-0 search-pill"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" id="product-search" class="form-control border-start-0 search-pill" placeholder="Buscar por Nome, SKU ou Código de Barras...">
+                            <button class="btn btn-outline-navy ms-2 search-pill px-4" type="button" data-bs-toggle="modal" data-bs-target="#scannerModal"><i class="fas fa-expand"></i></button>
+                        </div>
+                        <div id="search-results" class="list-group shadow position-absolute w-100 z-3" style="display:none;"></div>
                     </div>
-                    <div id="search-results" class="list-group shadow"></div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Coluna da Direita: Carrinho -->
-    <div class="col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-header"><h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Carrinho de Venda</h5></div>
-            <div class="card-body">
-                <div id="cart-items" class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr><th>Produto</th><th style="width: 120px;">Qtd.</th><th>Preço Unit.</th><th>Subtotal</th><th></th></tr>
-                        </thead>
-                        <tbody id="cart-table-body">
-                            <tr id="cart-empty-row"><td colspan="5" class="text-center text-muted">O carrinho está vazio.</td></tr>
-                        </tbody>
-                    </table>
+            <div class="card card-premium">
+                <div class="card-header bg-white border-0 pt-4 px-4">
+                    <h5 class="fw-bold text-navy mb-0">Itens no Carrinho</h5>
                 </div>
-            </div>
-            <div class="card-footer bg-white fs-5">
-                <div class="d-flex justify-content-between align-items-center">
-                    <strong>Total:</strong>
-                    <strong id="cart-total">R$ 0,00</strong>
+                <div class="card-body p-0">
+                    <div id="cart-items" class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light text-muted small text-uppercase">
+                                <tr>
+                                    <th class="ps-4">Produto</th>
+                                    <th style="width: 140px;">Quantidade</th>
+                                    <th>Unitário</th>
+                                    <th>Total</th>
+                                    <th class="pe-4 text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cart-table-body">
+                                <tr id="cart-empty-row"><td colspan="5" class="text-center py-5 text-muted"><i class="fas fa-shopping-basket fa-3x mb-3 d-block opacity-25"></i>Seu carrinho está vazio para começar...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="d-grid mt-3">
-            <button id="finalize-sale-btn" class="btn btn-success btn-lg" disabled data-bs-toggle="modal" data-bs-target="#finalizeSaleModal">Finalizar Venda</button>
+
+        <!-- Coluna da Direita: Finalização -->
+        <div class="col-lg-5">
+            <div class="cart-summary sticky-top" style="top: 20px;">
+                <h5 class="fw-bold text-navy mb-4">Resumo do Pedido</h5>
+                
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Subtotal:</span>
+                    <span id="summary-subtotal" class="fw-bold">R$ 0,00</span>
+                </div>
+                <div class="d-flex justify-content-between mb-4 border-bottom pb-3">
+                    <span class="text-muted">Desconto:</span>
+                    <span class="text-success fw-bold">R$ 0,00</span>
+                </div>
+                
+                <div class="text-center my-4 py-4 bg-light rounded-4">
+                    <p class="text-muted small text-uppercase fw-bold mb-1">Total a Pagar</p>
+                    <div id="cart-total" class="total-amount">R$ 0,00</div>
+                </div>
+
+                <div class="d-grid gap-3">
+                    <button id="finalize-sale-btn" class="btn btn-trust btn-lg shadow-sm" disabled data-bs-toggle="modal" data-bs-target="#finalizeSaleModal">
+                        FECHAR PEDIDO (F2)
+                    </button>
+                    <button class="btn btn-outline-danger border-0 small" onclick="window.location.reload()"><i class="fas fa-trash me-2"></i>Limpar Carrinho</button>
+                </div>
+
+                <div class="mt-4 pt-4 border-top">
+                    <div class="d-flex align-items-center gap-3 p-3 bg-light rounded-3">
+                        <div class="bg-white p-2 rounded-circle shadow-sm"><i class="fas fa-user-tie text-navy"></i></div>
+                        <div>
+                            <p class="mb-0 small text-muted">Vendedor</p>
+                            <p class="mb-0 fw-bold small"><?= $_SESSION['user_name'] ?? 'Caixa Principal' ?></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -287,6 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!hasItems) {
             cartTableBody.appendChild(cartEmptyRow);
+            document.getElementById('summary-subtotal').textContent = 'R$ 0,00';
         } else {
             for (const productId in cart) {
                 const item = cart[productId];
@@ -295,14 +420,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 const row = document.createElement('tr');
                 row.className = 'cart-item-row';
                 row.innerHTML = `
-                    <td>${item.name}</td>
-                    <td><input type="number" class="form-control form-control-sm quantity-input" value="${item.quantity}" min="1" max="${item.stock}" data-id="${item.id}"></td>
+                    <td class="ps-4">
+                        <div class="fw-bold">${item.name}</div>
+                        <div class="text-muted extra-small">ID: ${item.id} | Estoque: ${item.stock}</div>
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm" style="width: 100px;">
+                            <input type="number" class="form-control text-center quantity-input border-0 bg-light" value="${item.quantity}" min="1" max="${item.stock}" data-id="${item.id}">
+                        </div>
+                    </td>
                     <td>R$ ${parseFloat(item.price).toFixed(2)}</td>
-                    <td>R$ ${subtotal.toFixed(2)}</td>
-                    <td><button class="btn btn-sm btn-outline-danger remove-btn" data-id="${item.id}"><i class="fas fa-times"></i></button></td>
+                    <td class="fw-bold">R$ ${subtotal.toFixed(2)}</td>
+                    <td class="pe-4 text-center">
+                        <button class="btn btn-sm btn-link text-danger remove-btn" data-id="${item.id}"><i class="fas fa-trash-alt"></i></button>
+                    </td>
                 `;
                 cartTableBody.appendChild(row);
             }
+            document.getElementById('summary-subtotal').textContent = `R$ ${total.toFixed(2)}`;
         }
         currentTotal = total;
         cartTotalEl.textContent = `R$ ${total.toFixed(2)}`;

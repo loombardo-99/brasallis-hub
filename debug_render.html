@@ -1,0 +1,1239 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/jpeg" href="/assets/img/logu.jpeg">
+    <title>Gerenciador de Estoque</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/custom-theme.css?v=3.0">
+    <link rel="stylesheet" href="/assets/css/admin-theme.css?v=1.7">
+    
+    <!-- Branding Overrides Removed for System Identity Consistency -->
+    <!-- The theme is now fully controlled by admin-theme.css -->
+    <style>
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        .status-dot.ok { background-color: #34A853; } /* Verde */
+        .status-dot.low { background-color: #FBBC05; } /* Amarelo */
+        .status-dot.out { background-color: #EA4335; } /* Vermelho */
+
+        /* Estilos para a busca global */
+        .global-search-wrapper {
+            position: relative;
+            width: 450px;
+        }
+        #globalSearchResults {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1050; /* Para ficar sobre outros elementos */
+            max-height: 400px;
+            overflow-y: auto;
+            display: none; /* Começa escondido */
+        }
+        .search-result-category {
+            font-weight: bold;
+            color: var(--bs-primary);
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            background-color: #f8f9fa;
+        }
+
+        /* Forçar rolagem no corpo do modal */
+        .modal-dialog-scrollable .modal-body {
+            max-height: calc(100vh - 210px);
+            overflow-y: auto;
+        }
+
+        /* --- DASHBOARD STYLES --- */
+        .card-dashboard {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: white;
+        }
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .icon-shape {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 1.25rem;
+        }
+        .bg-primary-light { background-color: rgba(25, 118, 210, 0.1); color: var(--bs-primary); }
+        .bg-success-light { background-color: rgba(52, 168, 83, 0.1); color: #34A853; }
+        .bg-warning-light { background-color: rgba(251, 188, 5, 0.1); color: #FBBC05; }
+        .bg-danger-light { background-color: rgba(234, 67, 53, 0.1); color: #EA4335; }
+        .bg-info-light { background-color: rgba(66, 133, 244, 0.1); color: #4285F4; }
+
+        /* REFINED SIDEBAR (APPLE/GOOGLE STYLE) */
+        
+        /* Nav Item Base */
+        .nav-link-item, .nav-link-collapse {
+            padding: 10px 16px;
+            border-radius: 10px; /* More rounded */
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 2px;
+            /* Color and Background handled by admin-theme.css */
+        }
+
+        .icon-wrapper {
+            width: 24px;
+            display: inline-flex;
+            justify-content: center;
+            margin-right: 12px;
+            opacity: 0.8;
+            color: inherit;
+        }
+        
+        /* Ajuste fino para ícones chevron */
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+        .nav-link-collapse[aria-expanded="true"] .chevron-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Sistema de Temas
+        // Sistema de Temas (Removido - Identidade Única)
+
+
+        // Sistema de Sidebar Collapse e Mobile Drawer
+        // Sistema de Sidebar (Overlay Dinâmico)
+        window.toggleSidebar = function() {
+            const body = document.body;
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            body.classList.toggle('sidebar-open');
+            if (body.classList.contains('sidebar-open')) {
+                if(overlay) overlay.classList.add('show');
+            } else {
+                if(overlay) overlay.classList.remove('show');
+            }
+        };
+
+        // Inicialização Segura
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            // Garantir que o overlay fecha a sidebar
+            if(overlay) {
+                overlay.addEventListener('click', function() {
+                     body.classList.remove('sidebar-open');
+                     overlay.classList.remove('show');
+                });
+            }
+        });
+    </script>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+<header>
+  <!-- Sidebar Overlay (Mobile Backdrop) -->
+  <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <nav id="sidebarMenu" class="sidebar">
+    <!-- Sidebar Header foi removido em favor da Navbar Global -->
+
+    <!-- Scrollable Content Area -->
+    <div class="sidebar-content">
+      <div class="list-group list-group-flush mx-2 sidebar-nav">
+                    
+            <!-- SEÇÃO: VISÃO GERAL -->
+            <div class="sidebar-heading">Início</div>
+            <a href="/admin/painel_admin.php" class="nav-link-item d-flex align-items-center ">
+              <span class="icon-wrapper"><i class="fas fa-chart-pie"></i></span>
+              <span class="text-wrapper">Painel de Controle</span>
+            </a>
+            
+            <a href="/admin/notificacoes.php" class="nav-link-item d-flex align-items-center ">
+               <span class="icon-wrapper"><i class="fas fa-bell"></i></span>
+               <span class="text-wrapper d-flex justify-content-between w-100 align-items-center">
+                   Notificações
+                                  </span>
+            </a>
+
+            <!-- SEÇÃO: INTELIGÊNCIA (IA) -->
+            <div class="sidebar-heading mt-3">Inteligência</div>
+            <a href="/admin/agentes_ia.php" class="nav-link-item d-flex align-items-center ">
+              <span class="icon-wrapper"><i class="fas fa-robot"></i></span>
+              <span class="text-wrapper">Agentes de IA</span>
+            </a>
+            <a href="/admin/relatorios.php" class="nav-link-item d-flex align-items-center ">
+              <span class="icon-wrapper"><i class="fas fa-lightbulb"></i></span>
+              <span class="text-wrapper">Insights</span>
+            </a>
+
+            <!-- ACCORDION SECTIONS -->
+            <div class="sidebar-heading mt-3">Gestão</div>
+            
+            
+            <!-- Operacional Folder -->
+            <div class="nav-group">
+                <button class="nav-link-collapse w-100 d-flex align-items-center justify-content-between collapsed" 
+                        data-bs-toggle="collapse"
+                        data-bs-target="#menuOperacional"
+                        aria-expanded="false"
+                        aria-controls="menuOperacional">
+                    <div class="d-flex align-items-center">
+                        <span class="icon-wrapper"><i class="fas fa-boxes-stacked"></i></span>
+                        <span class="text-wrapper">Operacional</span>
+                    </div>
+                    <i class="fas fa-chevron-down chevron-icon" style="font-size: 0.7rem;"></i>
+                </button>
+                <div class="collapse " 
+                     id="menuOperacional" 
+                     data-bs-parent=".sidebar-nav">
+                    <div class="nav-sub-items">
+                                                <a href="/employee/pdv.php" class="nav-sub-link py-2 fw-bold text-success ">
+                            <i class="fas fa-cash-register me-2"></i>PDV / Caixa
+                        </a>
+                                                
+                                                <a href="/admin/produtos.php" class="nav-sub-link py-2 ">
+                            <i class="fas fa-box-open me-2 opacity-50"></i>Produtos
+                        </a>
+                        <a href="/admin/categorias.php" class="nav-sub-link py-2 ">
+                            <i class="fas fa-tags me-2 opacity-50"></i>Categorias
+                        </a>
+                        
+                                                <a href="/admin/compras.php" class="nav-sub-link py-2 ">
+                            <i class="fas fa-shopping-cart me-2 opacity-50"></i>Compras
+                        </a>
+                        <a href="/admin/fornecedores.php" class="nav-sub-link py-2 ">
+                            <i class="fas fa-truck-loading me-2 opacity-50"></i>Fornecedores
+                        </a>
+                        
+                                                <a href="/admin/movimentacoes.php" class="nav-sub-link py-2 ">
+                            <i class="fas fa-exchange-alt me-2 opacity-50"></i>Movimentações
+                        </a>
+                                            </div>
+                </div>
+            </div>
+
+            <!-- Corporativo Folder -->
+            <div class="nav-group">
+                <button class="nav-link-collapse w-100 d-flex align-items-center justify-content-between collapsed" 
+                        data-bs-toggle="collapse"
+                        data-bs-target="#menuCorporativo"
+                        aria-expanded="false"
+                        aria-controls="menuCorporativo">
+                    <div class="d-flex align-items-center">
+                        <span class="icon-wrapper"><i class="fas fa-building-user"></i></span>
+                        <span class="text-wrapper">Corporativo</span>
+                    </div>
+                    <i class="fas fa-chevron-down chevron-icon" style="font-size: 0.7rem;"></i>
+                </button>
+                <div class="collapse " 
+                     id="menuCorporativo" 
+                     data-bs-parent=".sidebar-nav">
+                    <div class="nav-sub-items">
+                                                <a href="/admin/organizacao.php" class="nav-sub-link py-2 ">
+                            <i class="fas fa-hotel me-2 opacity-50"></i>Empresa
+                        </a>
+                        
+                                                <a href="/modules/rh/views/index.php" class="nav-sub-link py-2 ">
+                            <i class="fas fa-users-gear me-2 opacity-50"></i>RH & Pessoal
+                        </a>
+                        
+                                                <a href="/admin/inteligencia_tributaria.php" class="nav-sub-link py-2 ">
+                            <i class="fas fa-file-invoice-dollar me-2 opacity-50"></i>Fiscal
+                        </a>
+                        
+                                                <a href="/admin/usuarios.php" class="nav-sub-link py-2 ">
+                            <i class="fas fa-user-group me-2 opacity-50"></i>Equipe
+                        </a>
+                                            </div>
+                </div>
+            </div>
+
+              </div>
+    </div>
+
+    <!-- Fixed Footer (Settings & Profile) -->
+    <div class="sidebar-footer border-top border-white-10 p-2">
+        <a href="/admin/configuracoes.php" class="nav-link-item d-flex align-items-center ">
+            <span class="icon-wrapper"><i class="fas fa-sliders"></i></span>
+            <span class="text-wrapper">Configurações</span>
+        </a>
+        <a href="/admin/suporte.php" class="nav-link-item d-flex align-items-center ">
+            <span class="icon-wrapper"><i class="fas fa-headset"></i></span>
+            <span class="text-wrapper">Suporte</span>
+        </a>
+    </div>
+
+  </nav>
+
+  <!-- Sidebar Tab Removida em favor do Overlay -->
+  <!-- Navbar -->
+  <nav id="main-navbar" class="navbar navbar-expand-lg glass-navbar fixed-top">
+    <!-- Container wrapper -->
+    <div class="container-fluid">
+      <!-- Alternador de Menu (Padrão Google) -->
+      <button
+        class="btn btn-link text-dark px-2 me-3 border-0 shadow-none d-flex align-items-center justify-content-center"
+        type="button"
+        onclick="window.toggleSidebar()"
+        aria-label="Alternar navegação"
+        style="width: 44px; height: 44px; border-radius: 50%;"
+      >
+        <i class="fas fa-bars fa-lg text-secondary"></i>
+      </button>
+
+      <!-- Logo da Marca (Topbar Único) -->
+      <a class="navbar-brand d-flex align-items-center gap-2 me-auto" href="/admin/painel_admin.php">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="32" height="32" rx="8" fill="#0A2647"/>
+              <path d="M22 11L11 22M11 11L22 22" stroke="white" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+          <span class="fw-bold fs-5 text-primary mb-0 d-none d-sm-block mt-1" style="font-family: 'Outfit', sans-serif;">BRASALLIS HUB</span>
+      </a>
+      
+
+      <!-- Global Search (Desktop) -->
+      <div class="global-search-wrapper mx-auto d-none d-md-block">
+          <div class="input-group">
+              <span class="input-group-text bg-transparent border-0 text-muted"><i class="fas fa-search"></i></span>
+              <input type="text" class="form-control bg-transparent border-0" id="globalSearchInput" placeholder="O que você procura hoje?" autocomplete="off" style="font-size: 0.95rem;">
+          </div>
+          <ul class="list-group shadow-lg" id="globalSearchResults"></ul>
+      </div>
+
+      <!-- Right links -->
+      <ul class="navbar-nav ms-auto d-flex flex-row align-items-center gap-2">
+        
+        <!-- Mobile Search Trigger -->
+        <li class="nav-item d-md-none">
+            <a class="nav-link p-2" href="#" id="mobile-search-trigger">
+                <i class="fas fa-search fa-lg"></i>
+            </a>
+        </li>
+        
+        <!-- (Theme Switcher Removed - System Identity Enforced) -->
+
+        <!-- Notifications -->
+        <li class="nav-item">
+          <a class="nav-link position-relative" href="/admin/notificacoes.php">
+            <i class="fas fa-bell fa-lg text-secondary"></i>
+                      </a>
+        </li>
+
+        <!-- User -->
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle d-flex align-items-center gap-2"
+            href="#"
+            id="navbarDropdownMenuLink"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <div class="rounded-circle bg-gray-200 d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 35px; height: 35px; background: #e9ecef;">
+                T            </div>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" aria-labelledby="navbarDropdownMenuLink">
+            <li><span class="dropdown-header text-uppercase small fw-bold">Conta</span></li>
+            <li><a class="dropdown-item" href="/editar_perfil.php"><i class="fas fa-user-circle me-2"></i>Editar Perfil</a></li>
+            <li><hr class="dropdown-divider opacity-10"></li>
+            <li>
+              <a class="dropdown-item text-danger" href="/sair.php"><i class="fas fa-sign-out-alt me-2"></i>Sair</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <!-- Container wrapper -->
+  </nav>
+
+  <!-- Mobile Search Overlay -->
+  <div id="mobile-search-overlay" class="d-none">
+      <div class="container-fluid h-100 d-flex align-items-center">
+          <div class="input-group input-group-lg">
+              <span class="input-group-text bg-transparent border-0"><i class="fas fa-search text-primary"></i></span>
+              <input type="text" class="form-control bg-transparent border-0 shadow-none" id="mobileSearchInput" placeholder="Buscar no sistema..." autocomplete="off">
+              <button class="btn btn-link text-muted" type="button" id="close-mobile-search"><i class="fas fa-times"></i></button>
+          </div>
+      </div>
+      <ul class="list-group shadow-lg position-absolute w-100 start-0 top-100" id="mobileSearchResults"></ul>
+  </div>
+</header>
+<main>
+  <div class="container-fluid">
+  
+<link href="../assets/css/dashboard.css" rel="stylesheet">
+
+
+<div class="container-fluid">
+    <!-- Global Announcements -->
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-bullhorn me-2 fs-5"></i>
+                    <div>
+                        <strong>Nova integrações com Marketplace: Mercado Livre disponivel.:</strong> 
+                        Nova integrações com Marketplace: Mercado Livre disponivel.                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            
+    <div class="header-container">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 header-content">
+        <!-- Identity -->
+        <div>
+            <div class="d-flex align-items-center gap-3 mb-1 justify-content-center justify-content-md-start">
+                <div class="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 48px; height: 48px;">
+                    <i class="fas fa-cube fa-lg"></i>
+                </div>
+                <div class="text-start">
+                    <h3 class="mb-0 company-brand">Minha Empresa</h3>
+                    <p class="welcome-text mb-0">Bem-vindo, Test User</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics -->
+        <div class="d-flex align-items-center gap-3 flex-wrap metrics-container">
+            <div class="metric-pill">
+                <div class="metric-icon bg-success-subtle text-success"><i class="fas fa-chart-bar"></i></div>
+                <div>
+                    <div class="kpi-label mb-0" style="font-size: 0.7rem;">Hoje</div>
+                    <div class="fw-bold text-main">R$ 0,00</div>
+                </div>
+            </div>
+            <div class="metric-pill">
+                <div class="metric-icon bg-danger-subtle text-danger"><i class="fas fa-bell"></i></div>
+                <div>
+                    <div class="kpi-label mb-0" style="font-size: 0.7rem;">Alertas</div>
+                    <div class="fw-bold text-main">0</div>
+                </div>
+            </div>
+            <div class="vr mx-2 d-none d-md-block" style="height: 30px; opacity: 0.1;"></div>
+                            <button class="btn btn-dark rounded-pill px-4 py-2 fw-bold shadow-sm"><i class="fas fa-plus me-2"></i>Nova Venda</button>
+                    </div>
+    </div>
+</div>
+
+<!-- Dynamic Dashboard Layout -->
+
+<!-- Row 1: Metrics -->
+<div class="row g-4 mb-4 sortable-row" id="row1">
+    <!-- Revenue -->
+<div class="col-12 col-md-6 col-xl-4" data-id="financeiro_revenue">
+    <div class="card card-dashboard h-100 p-4 position-relative overflow-hidden">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div class="kpi-label">Receita Mensal</div>
+                        <span class="badge bg-danger-subtle text-danger rounded-pill px-3">
+                -100.0%            </span>
+        </div>
+        <h2 class="display-6 fw-bold mb-3">R$ 48,00</h2>
+        
+        <div class="progress mb-3" style="height: 6px;">
+            <div class="progress-bar bg-primary" role="progressbar" style="width: 0.096%"></div>
+        </div>
+        <div class="d-flex justify-content-between text-muted small">
+            <span>Meta: R$ 50.000</span>
+            <span>0%</span>
+        </div>
+
+        <!-- Mini Chart (Static SVG) -->
+        <div class="position-absolute bottom-0 end-0 opacity-10 mb-n2 me-n2">
+            <svg width="120" height="60" viewBox="0 0 120 60" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M0 60 C30 60, 30 20, 60 20 C90 20, 90 40, 120 10" />
+            </svg>
+        </div>
+    </div>
+</div>
+<!-- Profit & Forecast -->
+<div class="col-12 col-md-6 col-xl-4" data-id="financeiro_profit">
+    <div class="d-flex flex-column gap-4 h-100">
+        <div class="card card-dashboard flex-grow-1 p-4 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <div class="kpi-label mb-1">Lucro Mensal</div>
+                                <h3 class="fw-bold mb-0 text-success">
+                    R$ 22,00                </h3>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-danger-subtle text-danger rounded-pill px-2">
+                    -100.0%                </span>
+            </div>
+        </div>
+        
+        <div class="card card-dashboard flex-grow-1 p-4 d-flex flex-row align-items-center justify-content-between">
+            <div>
+                <div class="kpi-label mb-1">Previsão de Lucro (30d)</div>
+                <h3 class="fw-bold mb-0 text-primary">
+                    R$ 24,20                </h3>
+            </div>
+            <div class="icon-circle bg-primary-subtle text-primary">
+                <i class="fas fa-chart-line fa-lg"></i>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Row 2: Analytics -->
+<div class="row g-4 mb-4 sortable-row" id="row2">
+    <div class="col-12 col-xl-8" data-id="sales_chart"><div class="card card-dashboard p-4 h-100"><div class="chart-header"><div><h5 class="chart-title">Análise de Desempenho</h5><p class="text-muted small mb-0">Comparativo de Vendas, Lucro e Previsão</p></div><select id="chartFilter" class="form-select form-select-sm w-auto border-0 bg-light fw-bold text-secondary" style="cursor: pointer;"><option value="day">30 Dias</option><option value="month" selected>12 Meses</option></select></div><div style="height: 350px; width: 100%;"><canvas id="salesChart"></canvas></div></div></div><div class="col-12 col-xl-4" data-id="setores_card">
+    <div class="card card-dashboard h-100 border-0 shadow-sm">
+        <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold m-0 text-navy">Meus Setores</h5>
+            <a href="../admin/organizacao.php" class="btn btn-sm btn-light rounded-pill px-3">Ver Todos</a>
+        </div>
+        <div class="card-body p-0">
+                            <div class="list-group list-group-flush">
+                                        <a href="../admin/setor_dashboard.php?id=2" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-4 py-3 border-light">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm" 
+                                 style="width: 35px; height: 35px; background-color: #FF9800; font-size: 0.9rem;">
+                                 <i class="fas fa-folder"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark">Comercial &amp;amp; Vendas</h6>
+                                <small class="text-muted">1 membro(s)</small>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-muted small"></i>
+                    </a>
+                                        <a href="../admin/setor_dashboard.php?id=3" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-4 py-3 border-light">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm" 
+                                 style="width: 35px; height: 35px; background-color: #2C7865; font-size: 0.9rem;">
+                                 <i class="fas fa-folder"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark">Financeiro</h6>
+                                <small class="text-muted">1 membro(s)</small>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-muted small"></i>
+                    </a>
+                                        <a href="../admin/setor_dashboard.php?id=1" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-4 py-3 border-light">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle text-white d-flex align-items-center justify-content-center shadow-sm" 
+                                 style="width: 35px; height: 35px; background-color: #2c7865; font-size: 0.9rem;">
+                                 <i class="fas fa-folder"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark">Rh</h6>
+                                <small class="text-muted">0 membro(s)</small>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-muted small"></i>
+                    </a>
+                                    </div>
+                    </div>
+    </div>
+</div>
+<div class="col-12 col-xl-4" data-id="estoque_saude">
+    <div class="card card-dashboard h-100 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="kpi-label mb-0">Saúde do Estoque</div>
+            <span class="badge bg-secondary-subtle text-secondary border-0">Score: 98/100</span>
+        </div>
+        <div class="d-flex flex-column gap-4">
+            <a href="produtos.php?filter=low_stock" class="text-decoration-none">
+                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-danger-subtle border border-danger-subtle transition-hover">
+                    <i class="fas fa-exclamation-triangle text-danger fa-lg"></i>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold text-danger">Estoque Crítico</h6>
+                        <small class="text-danger-emphasis">0 produtos precisam de reposição</small>
+                    </div>
+                    <i class="fas fa-chevron-right text-danger opacity-50"></i>
+                </div>
+            </a>
+            <a href="compras.php?filter=pending_review" class="text-decoration-none">
+                <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-warning-subtle border border-warning-subtle transition-hover">
+                    <i class="fas fa-clipboard-list text-warning fa-lg"></i>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold text-warning-emphasis">Compras Pendentes</h6>
+                        <small class="text-warning-emphasis">0 aguardando aprovação</small>
+                    </div>
+                    <i class="fas fa-chevron-right text-warning opacity-50"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    ['row1', 'row2'].forEach(rowId => {
+        const el = document.getElementById(rowId);
+        if (el) {
+            new Sortable(el, {
+                animation: 150,
+                handle: '.card',
+                ghostClass: 'bg-light',
+                onEnd: function (evt) {
+                    saveLayout();
+                }
+            });
+        }
+    });
+
+    function saveLayout() {
+        const layout = {
+            row1: getWidgetIds('row1'),
+            row2: getWidgetIds('row2')
+        };
+
+        fetch('/api/save_layout.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(layout)
+        })
+        .then(res => {
+            if (res.ok) console.log('Layout salvo com sucesso');
+        })
+        .catch(err => console.error('Falha na requisição:', err));
+    }
+
+    function getWidgetIds(containerId) {
+        const container = document.getElementById(containerId);
+        const ids = [];
+        if (container) {
+            const widgets = container.querySelectorAll('[data-id]');
+            widgets.forEach(w => {
+                if (w.parentElement.id === containerId || w.closest('.sortable-row').id === containerId) {
+                    ids.push(w.getAttribute('data-id'));
+                }
+            });
+        }
+        return ids; 
+    }
+});
+</script>
+
+<!-- Recent Activity -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card card-dashboard">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h5 class="fw-bold mb-0">Últimas Compras</h5>
+            </div>
+            <div class="card-body px-0">
+                <div class="table-responsive table-responsive-card">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 border-0 text-muted small text-uppercase fw-bold">ID</th>
+                                <th class="border-0 text-muted small text-uppercase fw-bold">Fornecedor</th>
+                                <th class="border-0 text-muted small text-uppercase fw-bold d-none d-md-table-cell">Data</th>
+                                <th class="border-0 text-muted small text-uppercase fw-bold">Valor</th>
+                                <th class="border-0 text-muted small text-uppercase fw-bold d-none d-sm-table-cell">Status</th>
+                                <th class="pe-4 border-0 text-muted small text-uppercase fw-bold text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                                                                            <tr>
+                                    <td class="ps-4 fw-bold">#8</td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span>PÃO DE AÇUCAR</span>
+                                            <span class="d-md-none small text-muted">18/01/2026</span>
+                                        </div>
+                                    </td>
+                                    <td class="d-none d-md-table-cell">18/01/2026</td>
+                                    <td class="fw-bold">R$ 1,00</td>
+                                    <td class="d-none d-lg-table-cell">
+                                                                                    <span class="badge bg-warning-light text-warning rounded-pill px-3">Pendente</span>
+                                                                            </td>
+                                    <td class="pe-4 text-end">
+                                        <a href="confirmar_compra.php?id=8" class="btn btn-sm btn-light text-muted"><i class="fas fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                                                                <tr>
+                                    <td class="ps-4 fw-bold">#7</td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span>ASSAI ATACADISTA</span>
+                                            <span class="d-md-none small text-muted">16/12/2025</span>
+                                        </div>
+                                    </td>
+                                    <td class="d-none d-md-table-cell">16/12/2025</td>
+                                    <td class="fw-bold">R$ 2,00</td>
+                                    <td class="d-none d-lg-table-cell">
+                                                                                    <span class="badge bg-success-light text-success rounded-pill px-3">Confirmado</span>
+                                                                            </td>
+                                    <td class="pe-4 text-end">
+                                        <a href="confirmar_compra.php?id=7" class="btn btn-sm btn-light text-muted"><i class="fas fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                                                                <tr>
+                                    <td class="ps-4 fw-bold">#6</td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span>ATACADÃO</span>
+                                            <span class="d-md-none small text-muted">15/12/2025</span>
+                                        </div>
+                                    </td>
+                                    <td class="d-none d-md-table-cell">15/12/2025</td>
+                                    <td class="fw-bold">R$ 2,00</td>
+                                    <td class="d-none d-lg-table-cell">
+                                                                                    <span class="badge bg-success-light text-success rounded-pill px-3">Confirmado</span>
+                                                                            </td>
+                                    <td class="pe-4 text-end">
+                                        <a href="confirmar_compra.php?id=6" class="btn btn-sm btn-light text-muted"><i class="fas fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                                                                <tr>
+                                    <td class="ps-4 fw-bold">#5</td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span>ATACADÃO</span>
+                                            <span class="d-md-none small text-muted">07/12/2025</span>
+                                        </div>
+                                    </td>
+                                    <td class="d-none d-md-table-cell">07/12/2025</td>
+                                    <td class="fw-bold">R$ 4.000,00</td>
+                                    <td class="d-none d-lg-table-cell">
+                                                                                    <span class="badge bg-success-light text-success rounded-pill px-3">Confirmado</span>
+                                                                            </td>
+                                    <td class="pe-4 text-end">
+                                        <a href="confirmar_compra.php?id=5" class="btn btn-sm btn-light text-muted"><i class="fas fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                                                                <tr>
+                                    <td class="ps-4 fw-bold">#4</td>
+                                    <td>
+                                        <div class="d-flex flex-column">
+                                            <span>ATACADÃO</span>
+                                            <span class="d-md-none small text-muted">03/12/2025</span>
+                                        </div>
+                                    </td>
+                                    <td class="d-none d-md-table-cell">03/12/2025</td>
+                                    <td class="fw-bold">R$ 20.000,00</td>
+                                    <td class="d-none d-lg-table-cell">
+                                                                                    <span class="badge bg-success-light text-success rounded-pill px-3">Confirmado</span>
+                                                                            </td>
+                                    <td class="pe-4 text-end">
+                                        <a href="confirmar_compra.php?id=4" class="btn btn-sm btn-light text-muted"><i class="fas fa-eye"></i></a>
+                                    </td>
+                                </tr>
+                                                                                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <footer class="mt-auto py-3 border-top bg-light">
+      <div class="container d-flex flex-wrap justify-content-between align-items-center">
+          <p class="col-md-4 mb-0 text-muted small">&copy; 2026 Brasallis ERP</p>
+
+          <ul class="nav col-md-4 justify-content-end list-unstyled d-flex small">
+              <li class="ms-3"><a class="text-muted text-decoration-none" href="/developers.php"><i class="fas fa-code me-1"></i>Developers API</a></li>
+              <li class="ms-3"><a class="text-muted text-decoration-none" href="#">Ajuda</a></li>
+              <li class="ms-3"><a class="text-muted text-decoration-none" href="#">Sobre</a></li>
+          </ul>
+      </div>
+  </footer>
+  </div>
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/assets/js/admin.js"></script>
+<script src="/assets/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('globalSearchInput');
+    const searchResults = document.getElementById('globalSearchResults');
+    
+    if (!searchInput || !searchResults) return;
+
+    let debounceTimer;
+
+    const performSearch = () => {
+        const query = searchInput.value;
+
+        if (query.length < 2) {
+            searchResults.innerHTML = '';
+            searchResults.style.display = 'none';
+            return;
+        }
+
+        fetch(`/api/busca_global.php?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                searchResults.innerHTML = '';
+                if (Object.keys(data).length > 0) {
+                    for (const category in data) {
+                        const categoryHeader = document.createElement('li');
+                        categoryHeader.className = 'list-group-item search-result-category';
+                        categoryHeader.textContent = category;
+                        searchResults.appendChild(categoryHeader);
+
+                        data[category].forEach(item => {
+                            const listItem = document.createElement('a');
+                            listItem.className = 'list-group-item list-group-item-action';
+                            listItem.href = item.url;
+                            listItem.textContent = item.name;
+                            searchResults.appendChild(listItem);
+                        });
+                    }
+                    searchResults.style.display = 'block';
+                } else {
+                    const noResults = document.createElement('li');
+                    noResults.className = 'list-group-item text-muted';
+                    noResults.textContent = 'Nenhum resultado encontrado.';
+                    searchResults.appendChild(noResults);
+                    searchResults.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Erro na busca global:', error);
+                searchResults.style.display = 'none';
+            });
+    };
+
+    searchInput.addEventListener('keyup', () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(performSearch, 300); // 300ms delay
+    });
+
+    // Hide results when clicking outside
+    document.addEventListener('click', function(event) {
+        if (!searchInput.contains(event.target)) {
+            searchResults.style.display = 'none';
+        }
+    });
+    
+    searchInput.addEventListener('focus', performSearch);
+
+    // Mobile Search Logic
+    const mobileTrigger = document.getElementById('mobile-search-trigger');
+    const mobileOverlay = document.getElementById('mobile-search-overlay');
+    const closeMobileSearch = document.getElementById('close-mobile-search');
+    const mobileInput = document.getElementById('mobileSearchInput');
+    const mobileResults = document.getElementById('mobileSearchResults');
+
+    if (mobileTrigger && mobileOverlay && mobileInput) {
+        mobileTrigger.addEventListener('click', (e) => {
+            e.preventDefault();
+            mobileOverlay.classList.remove('d-none');
+            mobileOverlay.classList.add('d-flex');
+            setTimeout(() => mobileInput.focus(), 100);
+        });
+
+        const closeSearch = () => {
+            mobileOverlay.classList.remove('d-flex');
+            mobileOverlay.classList.add('d-none');
+            mobileInput.value = '';
+            if(mobileResults) mobileResults.innerHTML = '';
+        };
+
+        closeMobileSearch.addEventListener('click', closeSearch);
+        
+        // Close on Esc
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !mobileOverlay.classList.contains('d-none')) {
+                closeSearch();
+            }
+        });
+
+        // Use same search logic for mobile
+        if(mobileInput) {
+            mobileInput.addEventListener('keyup', () => {
+                const query = mobileInput.value;
+                // Re-use logic (simplified duplication for safety)
+                 if (query.length < 2) {
+                    if(mobileResults) {
+                        mobileResults.innerHTML = '';
+                        mobileResults.style.display = 'none';
+                    }
+                    return;
+                }
+                
+                // Using same endpoint
+                fetch(`/api/busca_global.php?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if(mobileResults) {
+                            mobileResults.innerHTML = '';
+                            if (Object.keys(data).length > 0) {
+                                for (const category in data) {
+                                    const categoryHeader = document.createElement('li');
+                                    categoryHeader.className = 'list-group-item search-result-category';
+                                    categoryHeader.textContent = category;
+                                    mobileResults.appendChild(categoryHeader);
+            
+                                    data[category].forEach(item => {
+                                        const listItem = document.createElement('a');
+                                        listItem.className = 'list-group-item list-group-item-action';
+                                        listItem.href = item.url;
+                                        listItem.textContent = item.name;
+                                        mobileResults.appendChild(listItem);
+                                    });
+                                }
+                                mobileResults.style.display = 'block';
+                            } else {
+                                const noResults = document.createElement('li');
+                                noResults.className = 'list-group-item text-muted';
+                                noResults.textContent = 'Nenhum resultado encontrado.';
+                                mobileResults.appendChild(noResults);
+                                mobileResults.style.display = 'block';
+                            }
+                        }
+                    })
+                    .catch(console.error);
+            });
+        }
+    }
+});
+</script>
+
+<!-- AI Agent Floating Button -->
+<div id="ai-agent-fab" style="position: fixed; bottom: 30px; right: 30px; z-index: 1050; cursor: pointer;">
+    <div class="bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center p-1" style="width: 60px; height: 60px; transition: transform 0.2s;">
+        <img src="/assets/img/ai_agent_logo.png" alt="AI Agent" style="width: 32px; height: 32px;">
+    </div>
+</div>
+
+<!-- AI Agent Offcanvas Interface -->
+<div class="offcanvas offcanvas-end shadow-lg border-0 rounded-start-4" data-bs-scroll="true" tabindex="-1" id="offcanvasAIAgent" aria-labelledby="offcanvasAIAgentLabel" style="width: 400px;">
+    <div class="offcanvas-header bg-white border-bottom py-3">
+        <div class="d-flex align-items-center gap-2">
+            <img src="/assets/img/ai_agent_logo.png" alt="AI" width="24">
+            <h5 class="offcanvas-title fw-bold text-gradient" id="offcanvasAIAgentLabel" style="background: -webkit-linear-gradient(45deg, #4285F4, #9B72CB); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Assistente IA</h5>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    
+    <!-- Agent Selector -->
+    <div class="px-3 py-2 bg-light border-bottom">
+        <select id="agent-selector" class="form-select form-select-sm border-0 bg-transparent text-muted fw-bold">
+            <option value="">Selecione um Agente...</option>
+            <!-- Populated via JS -->
+        </select>
+        <select id="model-selector" class="form-select form-select-sm border-0 bg-transparent text-primary fw-bold mt-1">
+            <optgroup label="Google Gemini">
+                <option value="gemini-2.5-flash" selected>Gemini 2.5 Flash (Latest)</option>
+                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Best)</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+            </optgroup>
+            <optgroup label="OpenAI">
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                <option value="gpt-4o">GPT-4o</option>
+            </optgroup>
+        </select>
+    </div>
+
+    <div class="offcanvas-body p-0 d-flex flex-column bg-light" style="height: 100%;">
+        <!-- Chat Area -->
+        <div id="chat-messages" class="flex-grow-1 p-3" style="overflow-y: auto;">
+            <div class="text-center text-muted mt-5">
+                <i class="fas fa-magic fa-2x mb-3 text-secondary opacity-25"></i>
+                <p class="small">Escolha um agente acima e comece a conversa.</p>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-3 bg-white border-top">
+            <div class="input-group bg-light rounded-pill border overflow-hidden p-1 shadow-sm">
+                <input type="text" id="chat-input" class="form-control border-0 bg-transparent ps-3" placeholder="Pergunte algo..." aria-label="Mensagem">
+                <button class="btn btn-primary rounded-pill px-4" type="button" id="btn-send-chat">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            <div id="typing-indicator" class="text-muted small ms-3 mt-2" style="display: none;">
+                <span class="spinner-grow spinner-grow-sm text-primary" role="status" aria-hidden="true"></span>
+                Pensando...
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fab = document.getElementById('ai-agent-fab');
+    // Ensure Bootstrap is loaded
+    if (typeof bootstrap === 'undefined') {
+        console.error('Bootstrap JS is not loaded or failed to load.');
+        return;
+    }
+    
+    // Check if elements exist before using them
+    const offcanvasEl = document.getElementById('offcanvasAIAgent');
+    if (!offcanvasEl || !fab) return;
+
+    const bsOffcanvas = new bootstrap.Offcanvas(offcanvasEl);
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('btn-send-chat');
+    const messagesContainer = document.getElementById('chat-messages');
+    const agentSelector = document.getElementById('agent-selector');
+    const typingIndicator = document.getElementById('typing-indicator');
+
+    if (!chatInput || !sendBtn || !messagesContainer || !agentSelector) return;
+
+    let history = [];
+
+    // Toggle Chat
+    fab.addEventListener('click', () => bsOffcanvas.toggle());
+
+    // Load Agents
+    function loadAgents() {
+        fetch('/api/get_agents_list.php')
+            .then(r => r.json())
+            .then(data => {
+                if(data.length > 0) {
+                    agentSelector.innerHTML = data.map(a => `<option value="${a.id}">${a.name} (${a.role})</option>`).join('');
+                    // Select first active agent if none selected
+                    if (!agentSelector.value) {
+                         const active = data.find(a => a.status === 'active');
+                         if(active) agentSelector.value = active.id;
+                    }
+                } else {
+                    agentSelector.innerHTML = '<option>Sem agentes criados</option>';
+                }
+            })
+            .catch(e => console.error("Erro ao carregar agentes", e));
+    }
+    loadAgents();
+
+    // Expose Global Function to Open Chat with specific Agent
+    window.openAgentChat = function(agentId) {
+        bsOffcanvas.show();
+        loadAgents(); // Reload to ensure list is fresh
+        // Wait small delay for options to populate if needed, or set directly
+        setTimeout(() => {
+            if(agentId) agentSelector.value = agentId;
+        }, 500);
+    };
+
+    // Send Message
+    async function sendMessage() {
+        const text = chatInput.value.trim();
+        const agentId = agentSelector.value;
+        const modelId = document.getElementById('model-selector').value;
+        
+        if (!text || !agentId) return;
+
+        // UI User Message
+        appendMessage('user', text);
+        chatInput.value = '';
+        typingIndicator.style.display = 'block';
+
+        try {
+            const res = await fetch('/api/chat_agent.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    agent_id: agentId,
+                    message: text,
+                    model: modelId,
+                    history: history
+                })
+            });
+            
+            const data = await res.json();
+            
+            typingIndicator.style.display = 'none';
+            
+            if (data.error) {
+                appendMessage('system', 'Erro: ' + data.error);
+            } else {
+                // Split response by delimiter and show bubbles sequentially
+                const parts = data.response.split('<<<SPLIT>>>');
+                
+                // Function to show parts with delay
+                const showParts = async () => {
+                    for (const part of parts) {
+                        if(part.trim()) {
+                            appendMessage('model', part.trim());
+                            await new Promise(r => setTimeout(r, 800)); // Small delay for natural feel
+                        }
+                    }
+                    if (data.widget) {
+                        renderWidget(data.widget);
+                    }
+                };
+                showParts();
+
+                history.push({role: 'user', content: text});
+                history.push({role: 'model', content: data.response.replace(/<<<SPLIT>>>/g, '\n\n')}); // Store clean history
+            }
+
+        } catch (err) {
+            typingIndicator.style.display = 'none';
+            appendMessage('system', 'Erro de conexão.');
+        }
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMessage(); });
+
+    function appendMessage(role, text) {
+        const div = document.createElement('div');
+        div.className = `d-flex mb-3 ${role === 'user' ? 'justify-content-end' : 'justify-content-start'}`;
+        
+        const bubble = document.createElement('div');
+        bubble.className = `p-3 rounded-4 shadow-sm ${role === 'user' ? 'bg-primary text-white rounded-bottom-right-0' : 'bg-white text-dark border rounded-bottom-left-0'}`;
+        bubble.style.maxWidth = '85%';
+        
+        // Render Markdown if available, else text
+        if (typeof marked !== 'undefined' && role !== 'user') {
+             bubble.innerHTML = marked.parse(text);
+        } else {
+             bubble.innerHTML = text.replace(/\n/g, '<br>');
+        }
+        
+        div.appendChild(bubble);
+        messagesContainer.appendChild(div);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    function renderWidget(widget) {
+        const div = document.createElement('div');
+        div.className = 'mb-3 card border-0 shadow-sm overflow-hidden';
+        
+        let content = `<div class="card-header bg-white fw-bold small text-uppercase py-2">${widget.title || 'Dados'}</div>`;
+        content += `<div class="card-body p-0">`;
+
+        if (widget.type === 'table') {
+            content += `<div class="table-responsive"><table class="table table-sm table-striped mb-0 small"><thead><tr>`;
+            if (widget.data.length > 0) {
+                Object.keys(widget.data[0]).forEach(k => content += `<th>${k}</th>`);
+                content += `</tr></thead><tbody>`;
+                widget.data.forEach(row => {
+                    content += `<tr>`;
+                    Object.values(row).forEach(v => content += `<td>${v}</td>`);
+                    content += `</tr>`;
+                });
+                content += `</tbody></table></div>`;
+            }
+        } else if (widget.type === 'card' || widget.type === 'list') {
+            if (Array.isArray(widget.data)) {
+                 content += '<ul class="list-group list-group-flush">';
+                 widget.data.forEach(item => {
+                     const txt = item.name ? item.name : JSON.stringify(item);
+                     content += `<li class="list-group-item small">${txt}</li>`;
+                 });
+                 content += '</ul>';
+            } else {
+                // Single object summary
+                content += `<div class="p-3">${widget.text || JSON.stringify(widget.data)}</div>`;
+            }
+        }
+
+        content += `</div>`;
+        div.innerHTML = content;
+        messagesContainer.appendChild(div);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+});
+</script>
+</body>
+</html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const canvas = document.getElementById('salesChart');
+        if (!canvas) return;
+        
+        const getCssVar = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        const ctx = canvas.getContext('2d');
+        let salesChart;
+
+        const textColor = getCssVar('--text-main') || '#333';
+        const gridColor = getCssVar('--divider-color') || '#e0e0e0';
+        const mutedColor = getCssVar('--text-muted') || '#888';
+
+        function initChart(labels, salesData, costData, forecastData = []) {
+            if (salesChart) salesChart.destroy();
+            let finalLabels = [...labels];
+            let finalSales = [...salesData];
+            let finalCost = [...costData];
+            let finalForecast = new Array(salesData.length).fill(null);
+
+            if (forecastData && forecastData.length > 0) {
+                if (salesData.length > 0) finalForecast[salesData.length - 1] = salesData[salesData.length - 1];
+                forecastData.forEach(item => {
+                    finalLabels.push(item.label);
+                    finalSales.push(null);
+                    finalCost.push(null);
+                    finalForecast.push(item.predicted_sales);
+                });
+            }
+
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: finalLabels,
+                    datasets: [
+                        { label: 'Receita (R$)', data: finalSales, borderColor: '#0071e3', borderWidth: 3, fill: false, tension: 0.4 },
+                        { label: 'Custos (R$)', data: finalCost, borderColor: '#ff3b30', borderWidth: 3, fill: false, tension: 0.4 },
+                        { label: 'Previsão', data: finalForecast, borderColor: '#ff9f0a', borderDash: [5, 5], borderWidth: 2, fill: false, tension: 0.4 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: textColor } }
+                    },
+                    scales: {
+                        y: { grid: { color: gridColor }, ticks: { color: mutedColor } },
+                        x: { grid: { display: false }, ticks: { color: mutedColor } }
+                    }
+                }
+            });
+        }
+
+        const initialLabels = ["12\/2025","01\/2026","02\/2026","03\/2026"];
+        const initialSales = [101518.5,1819000,162073.5,48];
+        const initialCost = [41014.8,707500,63036.399999999994,26];
+        const initialForecast = [{"date":"2026-03-23","label":"23\/03","predicted_sales":12.6},{"date":"2026-03-24","label":"24\/03","predicted_sales":13.23},{"date":"2026-03-25","label":"25\/03","predicted_sales":13.89},{"date":"2026-03-26","label":"26\/03","predicted_sales":14.59},{"date":"2026-03-27","label":"27\/03","predicted_sales":15.32},{"date":"2026-03-28","label":"28\/03","predicted_sales":16.08},{"date":"2026-03-29","label":"29\/03","predicted_sales":16.89}];
+        initChart(initialLabels, initialSales, initialCost, initialForecast);
+
+        const chartFilter = document.getElementById('chartFilter');
+        if (chartFilter) {
+            chartFilter.addEventListener('change', function() {
+                const period = this.value;
+                fetch(`../api/get_dashboard_data.php?period=${period}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.error) initChart(data.labels, data.sales, data.cost, data.forecast ? data.forecast.forecast : []);
+                    });
+            });
+        }
+    });
+</script>

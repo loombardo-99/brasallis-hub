@@ -10,9 +10,33 @@
 .env.local
 .env.*
 
-# Arquivos de log
+# Base de Dados & Dumps (Segurança Crítica)
+*.sql
+*.json
+/database/data/
+db_structure.json
+
+# Logs e Diagnósticos
 *.log
+*.txt
+debug_*.php
+check_*.php
+full_scan.php
+rendered_output.html
+test_*.php
+diagnostico_db.php
+ full_scan.php
+multi_scan.php
+reparar_financeiro.php
+reproduce_nav.php
+reset_super_admin.php
+setup_db_customization.php
+v2_fiscal_migration.php
+verificar_codigo.php
 
 # Diretórios de sistema operacional
 .DS_Store
 Thumbs.db
+
+# Docker Data & Uploads
+/uploads/

@@ -1,3 +1,4 @@
+<?php
 // admin/setor_dashboard.php
 ob_start(); // Buffer output to prevent header issues
 session_start();
@@ -69,7 +70,7 @@ if (count($modulos) === 1 && !$is_admin) {
     if ($mod['slug'] === 'rh') $redirectUrl = '../modules/rh/views/index.php';
     elseif ($mod['slug'] === 'estoque') $redirectUrl = '../modules/estoque/views/index.php';
     elseif ($mod['slug'] === 'financeiro') $redirectUrl = '../modules/financeiro/views/index.php';
-    elseif ($mod['slug'] === 'pdv') $redirectUrl = '../modules/pdv/views/index.php';
+    elseif ($mod['slug'] === 'pdv') $redirectUrl = '../employee/pdv.php';
     elseif ($mod['slug'] === 'fiscal') $redirectUrl = '../modules/fiscal/views/index.php';
     
     if ($redirectUrl !== '#') {
@@ -132,6 +133,7 @@ require_once __DIR__ . '/../includes/cabecalho.php';
                                 if($mod['slug'] === 'financeiro') $url = '../modules/financeiro/views/index.php';
                                 if($mod['slug'] === 'crm') $url = '../modules/crm/views/index.php';
                                 if($mod['slug'] === 'fiscal') $url = '../modules/fiscal/views/index.php';
+                                if($mod['slug'] === 'pdv') $url = '../employee/pdv.php';
                             ?>
                             <a href="<?= $url ?>" class="btn btn-outline-primary w-100 rounded-pill">Acessar</a>
                         </div>

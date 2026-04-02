@@ -38,7 +38,7 @@ class FiscalIntegrator {
         $sql = "INSERT INTO fiscal_notas 
                 (empresa_id, numero, serie, tipo, modelo, chave_acesso, emitente_destinatario, cpf_cnpj, data_emissao, valor_total, valor_impostos, status, icms_base, icms_valor, ipi_valor, pis_valor, cofins_valor) 
                 VALUES 
-                (?, ?, ?, 'saida', 'nfc-e', ?, ?, ?, NOW(), ?, ?, 'autorizada', ?, ?, ?, ?, ?)";
+                (?, ?, ?, 'saida', 'cupom', ?, ?, ?, NOW(), ?, ?, 'autorizada', ?, ?, ?, ?, ?)";
         
         // Gerar chave de acesso fake (44 digitos)
         $chave = $this->generateAccessKey($empresaId, $nextNum);

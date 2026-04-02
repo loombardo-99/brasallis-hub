@@ -30,6 +30,8 @@ def get_structured_prompt():
         - `valor_total`: (string) O valor total final da nota. Use ponto como separador decimal. Ex: "199.99".
         - `nome_fornecedor`: (string) A razão social ou nome fantasia do fornecedor/emitente.
         - `cnpj_fornecedor`: (string) O CNPJ do fornecedor/emitente. Retorne apenas os números.
+        - `nome_destinatario`: (string) A razão social ou nome fantasia do destinatário (cliente em saídas).
+        - `cnpj_destinatario`: (string) O CNPJ do destinatário (cliente em saídas). Retorne apenas os números.
         - `itens`: (array de objetos) Uma lista de todos os produtos. Cada objeto deve ter: 
             - `descricao` (string)
             - `quantidade` (number)

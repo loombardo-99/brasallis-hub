@@ -1,10 +1,10 @@
 <?php if (isset($_SESSION['user_id'])) : ?>
   <footer class="mt-auto py-3 border-top bg-light">
       <div class="container d-flex flex-wrap justify-content-between align-items-center">
-          <p class="col-md-4 mb-0 text-muted small">&copy; <?= date('Y') ?> Gerenciador de Estoque</p>
+          <p class="col-md-4 mb-0 text-muted small">&copy; <?= date('Y') ?> Brasallis ERP</p>
 
           <ul class="nav col-md-4 justify-content-end list-unstyled d-flex small">
-              <li class="ms-3"><a class="text-muted text-decoration-none" href="/gerenciador_de_estoque/developers.php"><i class="fas fa-code me-1"></i>Developers API</a></li>
+              <li class="ms-3"><a class="text-muted text-decoration-none" href="/developers.php"><i class="fas fa-code me-1"></i>Developers API</a></li>
               <li class="ms-3"><a class="text-muted text-decoration-none" href="#">Ajuda</a></li>
               <li class="ms-3"><a class="text-muted text-decoration-none" href="#">Sobre</a></li>
           </ul>
@@ -17,168 +17,22 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="/gerenciador_de_estoque/assets/js/admin.js"></script>
-<script src="/gerenciador_de_estoque/assets/js/main.js"></script>
+<script src="/assets/js/admin.js"></script>
+<script src="/assets/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('globalSearchInput');
-    const searchResults = document.getElementById('globalSearchResults');
-    
-    if (!searchInput || !searchResults) return;
-
-    let debounceTimer;
-
-    const performSearch = () => {
-        const query = searchInput.value;
-
-        if (query.length < 2) {
-            searchResults.innerHTML = '';
-            searchResults.style.display = 'none';
-            return;
-        }
-
-        fetch(`/gerenciador_de_estoque/api/busca_global.php?q=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(data => {
-                searchResults.innerHTML = '';
-                if (Object.keys(data).length > 0) {
-                    for (const category in data) {
-                        const categoryHeader = document.createElement('li');
-                        categoryHeader.className = 'list-group-item search-result-category';
-                        categoryHeader.textContent = category;
-                        searchResults.appendChild(categoryHeader);
-
-                        data[category].forEach(item => {
-                            const listItem = document.createElement('a');
-                            listItem.className = 'list-group-item list-group-item-action';
-                            listItem.href = item.url;
-                            listItem.textContent = item.name;
-                            searchResults.appendChild(listItem);
-                        });
-                    }
-                    searchResults.style.display = 'block';
-                } else {
-                    const noResults = document.createElement('li');
-                    noResults.className = 'list-group-item text-muted';
-                    noResults.textContent = 'Nenhum resultado encontrado.';
-                    searchResults.appendChild(noResults);
-                    searchResults.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error('Erro na busca global:', error);
-                searchResults.style.display = 'none';
-            });
-    };
-
-    searchInput.addEventListener('keyup', () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(performSearch, 300); // 300ms delay
-    });
-
-    // Hide results when clicking outside
-    document.addEventListener('click', function(event) {
-        if (!searchInput.contains(event.target)) {
-            searchResults.style.display = 'none';
-        }
-    });
-    
-    searchInput.addEventListener('focus', performSearch);
-
-    // Mobile Search Logic
-    const mobileTrigger = document.getElementById('mobile-search-trigger');
-    const mobileOverlay = document.getElementById('mobile-search-overlay');
-    const closeMobileSearch = document.getElementById('close-mobile-search');
-    const mobileInput = document.getElementById('mobileSearchInput');
-    const mobileResults = document.getElementById('mobileSearchResults');
-
-    if (mobileTrigger && mobileOverlay && mobileInput) {
-        mobileTrigger.addEventListener('click', (e) => {
-            e.preventDefault();
-            mobileOverlay.classList.remove('d-none');
-            mobileOverlay.classList.add('d-flex');
-            setTimeout(() => mobileInput.focus(), 100);
-        });
-
-        const closeSearch = () => {
-            mobileOverlay.classList.remove('d-flex');
-            mobileOverlay.classList.add('d-none');
-            mobileInput.value = '';
-            if(mobileResults) mobileResults.innerHTML = '';
-        };
-
-        closeMobileSearch.addEventListener('click', closeSearch);
-        
-        // Close on Esc
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !mobileOverlay.classList.contains('d-none')) {
-                closeSearch();
-            }
-        });
-
-        // Use same search logic for mobile
-        if(mobileInput) {
-            mobileInput.addEventListener('keyup', () => {
-                const query = mobileInput.value;
-                // Re-use logic (simplified duplication for safety)
-                 if (query.length < 2) {
-                    if(mobileResults) {
-                        mobileResults.innerHTML = '';
-                        mobileResults.style.display = 'none';
-                    }
-                    return;
-                }
-                
-                // Using same endpoint
-                fetch(`/gerenciador_de_estoque/api/busca_global.php?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if(mobileResults) {
-                            mobileResults.innerHTML = '';
-                            if (Object.keys(data).length > 0) {
-                                for (const category in data) {
-                                    const categoryHeader = document.createElement('li');
-                                    categoryHeader.className = 'list-group-item search-result-category';
-                                    categoryHeader.textContent = category;
-                                    mobileResults.appendChild(categoryHeader);
-            
-                                    data[category].forEach(item => {
-                                        const listItem = document.createElement('a');
-                                        listItem.className = 'list-group-item list-group-item-action';
-                                        listItem.href = item.url;
-                                        listItem.textContent = item.name;
-                                        mobileResults.appendChild(listItem);
-                                    });
-                                }
-                                mobileResults.style.display = 'block';
-                            } else {
-                                const noResults = document.createElement('li');
-                                noResults.className = 'list-group-item text-muted';
-                                noResults.textContent = 'Nenhum resultado encontrado.';
-                                mobileResults.appendChild(noResults);
-                                mobileResults.style.display = 'block';
-                            }
-                        }
-                    })
-                    .catch(console.error);
-            });
-        }
-    }
-});
+// A lógica de busca e navegação mobile foi centralizada no cabecalho.php para performance e consistência.
 </script>
-<!-- AI Agent Floating Button -->
-<div id="ai-agent-fab" style="position: fixed; bottom: 30px; right: 30px; z-index: 1050; cursor: pointer;">
-    <div class="bg-white rounded-circle shadow-lg d-flex align-items-center justify-content-center p-1" style="width: 60px; height: 60px; transition: transform 0.2s;">
-        <img src="/gerenciador_de_estoque/assets/img/ai_agent_logo.png" alt="AI Agent" style="width: 32px; height: 32px;">
-    </div>
-</div>
 
+
+
+
+<?php if (isset($_SESSION['user_id'])) : ?>
 <!-- AI Agent Offcanvas Interface -->
 <div class="offcanvas offcanvas-end shadow-lg border-0 rounded-start-4" data-bs-scroll="true" tabindex="-1" id="offcanvasAIAgent" aria-labelledby="offcanvasAIAgentLabel" style="width: 400px;">
     <div class="offcanvas-header bg-white border-bottom py-3">
         <div class="d-flex align-items-center gap-2">
-            <img src="/gerenciador_de_estoque/assets/img/ai_agent_logo.png" alt="AI" width="24">
+            <img src="/assets/img/ai_agent_logo.png" alt="AI" width="24">
             <h5 class="offcanvas-title fw-bold text-gradient" id="offcanvasAIAgentLabel" style="background: -webkit-linear-gradient(45deg, #4285F4, #9B72CB); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Assistente IA</h5>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -257,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Load Agents
     function loadAgents() {
-        fetch('/gerenciador_de_estoque/api/get_agents_list.php')
+        fetch('/api/get_agents_list.php')
             .then(r => r.json())
             .then(data => {
                 if(data.length > 0) {
@@ -299,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
         typingIndicator.style.display = 'block';
 
         try {
-            const res = await fetch('/gerenciador_de_estoque/api/chat_agent.php', {
+            const res = await fetch('/api/chat_agent.php', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -407,5 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+<?php endif; ?>
 </body>
 </html>

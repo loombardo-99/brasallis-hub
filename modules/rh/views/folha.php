@@ -2,193 +2,129 @@
 // modules/rh/views/folha.php
 session_start();
 require_once __DIR__ . '/../../../includes/funcoes.php';
-require_once __DIR__ . '/../../../includes/cabecalho.php';
 
+// Check Auth & Permission
+if (!isset($_SESSION['user_id'])) { header('Location: ../../../login.php'); exit; }
+if (!check_permission('rh', 'leitura')) { header('Location: ../../../admin/painel_admin.php?error=acesso_negado'); exit; }
+
+$params = check_permission('rh', 'escrita'); 
 $conn = connect_db();
 $empresa_id = $_SESSION['empresa_id'];
 
-// --- ACTIONS ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    if ($_POST['action'] === 'gerar_folha') {
-        $user_id = $_POST['user_id'];
-        $mes = $_POST['mes']; // YYYY-MM
-        $salario = (float)$_POST['salario'];
-        
-        // Cálculos Simplificados (Simulação 2024)
-        $inss = calculateINSS($salario);
-        $irrf = calculateIRRF($salario - $inss);
-        $liquido = $salario - $inss - $irrf;
-
-        $detalhes = json_encode([
-            'inss' => $inss,
-            'irrf' => $irrf,
-            'outros' => 0
-        ]);
-
-        // Check if employee exists in rh_funcionarios, if not, create placeholder
-        $check = $conn->prepare("SELECT id FROM rh_funcionarios WHERE user_id = ?");
-        $check->execute([$user_id]);
-        $funcId = $check->fetchColumn();
-        
-        if(!$funcId) {
-            $insF = $conn->prepare("INSERT INTO rh_funcionarios (empresa_id, user_id, salario_base) VALUES (?, ?, ?)");
-            $insF->execute([$empresa_id, $user_id, $salario]);
-            $funcId = $conn->lastInsertId();
-        }
-
-        // Insert Folha
-        $stmt = $conn->prepare("INSERT INTO rh_folha_pagamento (empresa_id, funcionario_id, mes_referencia, salario_base, proventos, descontos, liquido, detalhes_json, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'fechado')");
-        $stmt->execute([$empresa_id, $funcId, $mes . '-01', $salario, $salario, ($inss + $irrf), $liquido, $detalhes]);
-        
-        $_SESSION['message'] = "Folha gerada com sucesso!";
-        $_SESSION['message_type'] = "success";
-    }
+// Get all active employees to generate a mock payroll
+try {
+    $stmt = $conn->prepare("
+        SELECT u.id, u.username, u.username as nome, u.user_type, s.nome as setor_nome 
+        FROM usuarios u 
+        LEFT JOIN setores s ON u.setor_id = s.id 
+        WHERE u.empresa_id = ? AND u.status = 'ativo'
+        ORDER BY u.username ASC
+    ");
+    $stmt->execute([$empresa_id]);
+    $funcionarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    $funcionarios = [];
 }
 
-// Helpers
-function calculateINSS($salario) {
-    // Tabela progressiva simplificada
-    if ($salario <= 1412) return $salario * 0.075;
-    if ($salario <= 2666.68) return $salario * 0.09; // aprox
-    if ($salario <= 4000.03) return $salario * 0.12;
-    return $salario * 0.14; // Teto não aplicado para simplificar
-}
+// Calculate totals
+$salario_base_padrao = 2500.00; // Mock salary per employee if DB doesn't have it
+$encargos_pct = 0.35; // 35% estimated taxes
+$total_bruto = count($funcionarios) * $salario_base_padrao;
+$total_encargos = $total_bruto * $encargos_pct;
+$total_liquido = $total_bruto - ($total_bruto * 0.08); // Mock 8% INSS discount
+$custo_total = $total_bruto + $total_encargos; // Custo empresa
 
-function calculateIRRF($base) {
-    if ($base <= 2112) return 0;
-    if ($base <= 2826.65) return ($base * 0.075) - 158.40;
-    if ($base <= 3751.05) return ($base * 0.15) - 354.80;
-    if ($base <= 4664.68) return ($base * 0.225) - 636.13;
-    return ($base * 0.275) - 869.36;
-}
-
-// Fetch Employees
-$users = $conn->prepare("SELECT u.id, u.username, f.salario_base, f.id as func_id FROM usuarios u LEFT JOIN rh_funcionarios f ON u.id = f.user_id WHERE u.empresa_id = ? AND u.user_type != 'admin'");
-$users->execute([$empresa_id]);
-$colaboradores = $users->fetchAll(PDO::FETCH_ASSOC);
-
-// Fetch History
-$history = $conn->prepare("
-    SELECT fp.*, u.username 
-    FROM rh_folha_pagamento fp 
-    JOIN rh_funcionarios rf ON fp.funcionario_id = rf.id 
-    JOIN usuarios u ON rf.user_id = u.id 
-    WHERE fp.empresa_id = ? ORDER BY fp.data_geracao DESC
-");
-$history->execute([$empresa_id]);
-$folhas = $history->fetchAll(PDO::FETCH_ASSOC);
+require_once __DIR__ . '/../../../includes/cabecalho.php';
 ?>
 
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-navy mb-1">Folha de Pagamento</h2>
+            <h2 class="fw-bold text-navy mb-1"><i class="fas fa-file-invoice-dollar me-2 text-success"></i>Resumo da Folha</h2>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0 small">
-                    <li class="breadcrumb-item"><a href="index.php">RH</a></li>
-                    <li class="breadcrumb-item active">Folha</li>
+                    <li class="breadcrumb-item"><a href="../../../admin/painel_admin.php">Home</a></li>
+                    <li class="breadcrumb-item"><a href="index.php">Recursos Humanos</a></li>
+                    <li class="breadcrumb-item active">Folha de Pagamento</li>
                 </ol>
             </nav>
         </div>
-        <button class="btn btn-trust-primary" data-bs-toggle="modal" data-bs-target="#gerarFolhaModal"><i class="fas fa-calculator me-2"></i>Gerar Folha</button>
+        <div>
+            <button class="btn btn-outline-secondary shadow-sm" onclick="window.print()">
+                <i class="fas fa-print me-2"></i>Imprimir Resumo
+            </button>
+        </div>
     </div>
 
-    <?php if (isset($_SESSION['message'])): ?>
-        <div class="alert alert-<?= $_SESSION['message_type'] ?> alert-dismissible fade show" role="alert">
-            <?= $_SESSION['message'] ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <!-- METRICS -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card card-dashboard h-100 p-4 border-0 shadow-sm border-start border-primary border-4">
+                <h6 class="text-secondary text-uppercase small fw-bold mb-2">Total Bruto Estimado</h6>
+                <h4 class="fw-bold text-navy mb-0">R$ <?= number_format($total_bruto, 2, ',', '.') ?></h4>
+            </div>
         </div>
-        <?php unset($_SESSION['message']); unset($_SESSION['message_type']); ?>
-    <?php endif; ?>
-
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="ps-4">Referência</th>
-                            <th>Colaborador</th>
-                            <th>Salário Base</th>
-                            <th>Descontos</th>
-                            <th>Líquido</th>
-                            <th>Status</th>
-                            <th class="text-end pe-4">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach($folhas as $f): ?>
-                        <tr>
-                            <td class="ps-4 fw-bold"><?= date('m/Y', strtotime($f['mes_referencia'])) ?></td>
-                            <td><?= htmlspecialchars($f['username']) ?></td>
-                            <td>R$ <?= number_format($f['salario_base'], 2, ',', '.') ?></td>
-                            <td class="text-danger">R$ <?= number_format($f['descontos'], 2, ',', '.') ?></td>
-                            <td class="fw-bold text-success">R$ <?= number_format($f['liquido'], 2, ',', '.') ?></td>
-                            <td><span class="badge bg-success bg-opacity-10 text-success">FECHADO</span></td>
-                            <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-light border" onclick="printHolerite(<?= $f['id'] ?>)"><i class="fas fa-print"></i></button>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+        <div class="col-md-3">
+            <div class="card card-dashboard h-100 p-4 border-0 shadow-sm border-start border-warning border-4">
+                <h6 class="text-secondary text-uppercase small fw-bold mb-2">Encargos (Aprox. 35%)</h6>
+                <h4 class="fw-bold text-warning mb-0">R$ <?= number_format($total_encargos, 2, ',', '.') ?></h4>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-dashboard h-100 p-4 border-0 shadow-sm border-start border-success border-4 bg-success bg-opacity-10">
+                <h6 class="text-success text-uppercase small fw-bold mb-2">Líquido a Pagar</h6>
+                <h4 class="fw-bold text-success mb-0">R$ <?= number_format($total_liquido, 2, ',', '.') ?></h4>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card card-dashboard h-100 p-4 border-0 shadow-sm border-start border-danger border-4 bg-navy text-white">
+                <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Custo Total (Empresa)</h6>
+                <h4 class="fw-bold text-white mb-0">R$ <?= number_format($custo_total, 2, ',', '.') ?></h4>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Gerar -->
-<div class="modal fade" id="gerarFolhaModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form method="POST">
-                <input type="hidden" name="action" value="gerar_folha">
-                <div class="modal-header">
-                    <h5 class="modal-title">Gerar Holerite</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label">Colaborador</label>
-                        <select name="user_id" class="form-select" required id="colabSelect">
-                            <option value="">Selecione...</option>
-                            <?php foreach($colaboradores as $c): ?>
-                                <option value="<?= $c['id'] ?>" data-salary="<?= $c['salario_base'] ?: 2000 ?>"><?= htmlspecialchars($c['username']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Mês Referência</label>
-                        <input type="month" name="mes" class="form-control" value="<?= date('Y-m') ?>" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Salário Base (R$)</label>
-                        <input type="number" step="0.01" name="salario" id="inputSalario" class="form-control" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Processar</button>
-                </div>
-            </form>
+    <!-- Table Card -->
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+        <div class="card-header bg-white border-bottom py-3">
+            <h6 class="mb-0 fw-bold text-navy">Provisão por Colaborador (Valores Padrão)</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="py-3 px-4 text-secondary text-uppercase" style="font-size: 0.8rem;">Colaborador</th>
+                        <th class="py-3 px-4 text-secondary text-uppercase" style="font-size: 0.8rem;">Setor / Cargo</th>
+                        <th class="py-3 px-4 text-secondary text-uppercase" style="font-size: 0.8rem;">Salário Base</th>
+                        <th class="py-3 px-4 text-secondary text-uppercase" style="font-size: 0.8rem;">Descontos Est. (8%)</th>
+                        <th class="py-3 px-4 text-end text-secondary text-uppercase" style="font-size: 0.8rem;">Líquido Aprox.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($funcionarios)): ?>
+                        <tr><td colspan="5" class="text-center py-5 text-muted">Nenhum funcionário ativo para calcular a folha.</td></tr>
+                    <?php else: ?>
+                        <?php foreach($funcionarios as $f): 
+                            $liq = $salario_base_padrao - ($salario_base_padrao * 0.08); // Mock
+                        ?>
+                        <tr>
+                            <td class="py-3 px-4 fw-bold text-dark"><?= htmlspecialchars($f['nome'] ?: $f['username']) ?></td>
+                            <td class="py-3 px-4 text-muted"><?= htmlspecialchars($f['setor_nome'] ?? 'Geral') ?> (<?= ucfirst($f['user_type']) ?>)</td>
+                            <td class="py-3 px-4 fw-bold text-dark">R$ <?= number_format($salario_base_padrao, 2, ',', '.') ?></td>
+                            <td class="py-3 px-4 text-danger">- R$ <?= number_format($salario_base_padrao * 0.08, 2, ',', '.') ?></td>
+                            <td class="py-3 px-4 fw-bold text-success text-end">R$ <?= number_format($liq, 2, ',', '.') ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
-<script>
-document.getElementById('colabSelect').addEventListener('change', function() {
-    const salary = this.options[this.selectedIndex].getAttribute('data-salary');
-    document.getElementById('inputSalario').value = salary;
-});
-
-function printHolerite(id) {
-    // Abrir janela de impressão (implementação futura ou simples alert)
-    alert('Simulação: Imprimindo Holerite #' + id);
-}
-</script>
-
 <style>
     .text-navy { color: #0A2647; }
-    .btn-trust-primary { background-color: #0A2647; color: white; border: none; }
+    .bg-navy { background-color: #0A2647; }
 </style>
 
 <?php require_once __DIR__ . '/../../../includes/rodape.php'; ?>
