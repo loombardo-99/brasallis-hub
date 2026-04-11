@@ -19,7 +19,7 @@ class PdvService
         private ProdutoRepository $produtoRepo
     ) {}
 
-    public function finalizarVenda(array $items, string $paymentMethod): int
+    public function finalizarVenda(array $items, array $payments): int
     {
         if (session_status() === PHP_SESSION_NONE) session_start();
         $empresaId = (int)$_SESSION['empresa_id'];
@@ -42,14 +42,39 @@ class PdvService
                 $totalAmount += ($qty * (float)$item['price']);
             }
 
+            // Validar total dos pagamentos
+            $totalPayment = 0;
+            $mainMethod = 'múltiplos';
+            if (count($payments) === 1) {
+                $mainMethod = $payments[0]['method'];
+            }
+            
+            foreach ($payments as $payment) {
+                $totalPayment += (float)$payment['value'];
+            }
+
+            // O total de pagamentos pode ser maior se houver troco (em dinheiro), mas não pode ser menor
+            if (round($totalPayment, 2) < round($totalAmount, 2)) {
+                throw new Exception("O valor pago (R$ {$totalPayment}) é menor que o total da venda (R$ {$totalAmount}).");
+            }
+
             // 2. Criar Venda
             $vendaId = $this->vendaRepo->create([
                 'user_id' => $userId,
                 'total_amount' => $totalAmount,
-                'payment_method' => $paymentMethod
+                'payment_method' => $mainMethod
             ]);
 
-            // 3. Processar Itens
+            // 3. Processar Pagamentos (inserir na tabela de múltiplos)
+            foreach ($payments as $payment) {
+                $this->vendaRepo->addPayment([
+                    'venda_id' => $vendaId,
+                    'metodo_pagamento' => $payment['method'],
+                    'valor' => (float)$payment['value']
+                ]);
+            }
+
+            // 4. Processar Itens
             foreach ($items as $item) {
                 $productId = (int)$item['id'];
                 $qty = (float)$item['qty'];
@@ -67,10 +92,7 @@ class PdvService
                 $this->produtoRepo->atualizarEstoque($productId, $qty, 'saida');
             }
 
-            // 4. Integração Fiscal (Opcional - chamando via Controller ou mantendo no Service)
-            // Para manter o service "puro", poderíamos injetar o FiscalIntegrator ou emitir um evento.
-            // No PDV legado, é chamado via API após a resposta do commit. 
-            // Vamos manter a lógica aqui se quisermos automação total, mas o PDV legado é reativo ao cliente.
+            // 5. Integração Fiscal (Opcional)
 
             $this->pdo->commit();
             return $vendaId;

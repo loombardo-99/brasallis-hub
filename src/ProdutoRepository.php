@@ -22,10 +22,18 @@ class ProdutoRepository
             $stmt = $this->conn->prepare("INSERT INTO produtos (empresa_id, name, sku, description, cost_price, price, quantity, minimum_stock, categoria_id, unidade_medida, lote, validade, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([
                 $this->empresa_id,
-                $data['name'], $data['sku'], $data['description'], $data['cost_price'], $data['price'], $data['quantity'],
-                $data['minimum_stock'], empty($data['categoria_id']) ? null : $data['categoria_id'], $data['unidade_medida'], $data['lote'],
+                $data['name'], 
+                $data['sku'] ?? null, 
+                $data['description'] ?? '', 
+                $data['cost_price'] ?? 0, 
+                $data['price'] ?? 0, 
+                $data['quantity'] ?? 0,
+                $data['minimum_stock'] ?? 0, 
+                empty($data['categoria_id']) ? null : $data['categoria_id'], 
+                $data['unidade_medida'] ?? 'un', 
+                $data['lote'] ?? null,
                 empty($data['validade']) ? null : $data['validade'],
-                $data['observacoes']
+                $data['observacoes'] ?? ''
             ]);
             
             $product_id = $this->conn->lastInsertId();
@@ -59,10 +67,19 @@ class ProdutoRepository
     {
         $stmt = $this->conn->prepare("UPDATE produtos SET name=?, sku=?, description=?, cost_price=?, price=?, quantity=?, minimum_stock=?, categoria_id=?, unidade_medida=?, lote=?, validade=?, observacoes=? WHERE id=? AND empresa_id = ?");
         return $stmt->execute([
-            $data['name'], $data['sku'], $data['description'], $data['cost_price'], $data['price'], $data['quantity'],
-            $data['minimum_stock'], empty($data['categoria_id']) ? null : $data['categoria_id'], $data['unidade_medida'], $data['lote'],
+            $data['name'], 
+            $data['sku'] ?? null, 
+            $data['description'] ?? '', 
+            $data['cost_price'] ?? 0, 
+            $data['price'] ?? 0, 
+            $data['quantity'] ?? 0,
+            $data['minimum_stock'] ?? 0, 
+            empty($data['categoria_id']) ? null : $data['categoria_id'], 
+            $data['unidade_medida'] ?? 'un', 
+            $data['lote'] ?? null,
             empty($data['validade']) ? null : $data['validade'],
-            $data['observacoes'], $data['id'],
+            $data['observacoes'] ?? '', 
+            $data['id'],
             $this->empresa_id
         ]);
     }

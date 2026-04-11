@@ -66,6 +66,7 @@ if (strpos($page_active, 'produtos') !== false || strpos($page_active, 'categori
                     'icon' => 'fa-chart-pie',
                     'color' => '#111827',
                     'perm' => 'admin',
+                    'priority' => 10,
                     'links' => [
                         ['label' => 'Dashboard Executivo', 'url' => '/admin/painel_admin.php'],
                         ['label' => 'Relatórios P&L', 'url' => '/admin/relatorios.php'],
@@ -77,6 +78,7 @@ if (strpos($page_active, 'produtos') !== false || strpos($page_active, 'categori
                     'icon' => 'fa-boxes-stacked',
                     'color' => '#2563eb',
                     'perm' => 'estoque',
+                    'priority' => 7,
                     'links' => [
                         ['label' => 'Estoque Central', 'url' => '/admin/produtos.php'],
                         ['label' => 'Categorias & Tags', 'url' => '/admin/categorias.php'],
@@ -89,6 +91,7 @@ if (strpos($page_active, 'produtos') !== false || strpos($page_active, 'categori
                     'icon' => 'fa-user-tie',
                     'color' => '#6366f1',
                     'perm' => 'rh',
+                    'priority' => 6,
                     'links' => [
                         ['label' => 'Equipe (RH)', 'url' => '/modules/rh/views/index.php'],
                         ['label' => 'Folha de Pagto', 'url' => '/modules/rh/views/folha.php'],
@@ -100,6 +103,7 @@ if (strpos($page_active, 'produtos') !== false || strpos($page_active, 'categori
                     'icon' => 'fa-money-bill-transfer',
                     'color' => '#10b981',
                     'perm' => 'financeiro',
+                    'priority' => 8,
                     'links' => [
                         ['label' => 'Fluxo de Caixa', 'url' => '/modules/financeiro/views/index.php'],
                         ['label' => 'Contas a Pagar', 'url' => '/modules/financeiro/views/contas.php'],
@@ -111,6 +115,7 @@ if (strpos($page_active, 'produtos') !== false || strpos($page_active, 'categori
                     'icon' => 'fa-rocket',
                     'color' => '#f59e0b',
                     'perm' => 'crm',
+                    'priority' => 5,
                     'links' => [
                         ['label' => 'CRM Pipeline', 'url' => '/modules/crm/views/kanban.php'],
                         ['label' => 'Frente de Caixa (PDV)', 'url' => '/modules/pdv/views/index.php'],
@@ -122,14 +127,16 @@ if (strpos($page_active, 'produtos') !== false || strpos($page_active, 'categori
                     'icon' => 'fa-wand-magic-sparkles',
                     'color' => '#a855f7',
                     'perm' => 'ai',
+                    'priority' => 9,
                     'links' => [
                         ['label' => 'IA Agents', 'url' => '/admin/agentes_ia.php'],
+                        ['label' => 'Black Box Status', 'url' => '/admin/analytics_blackbox.php'],
                         ['label' => 'Automações Hub', 'url' => '/admin/debug_automations.php']
                     ]
                 ]
             ];
 
-            // Filtra pilares por permissão
+            // Filtra pilares por permissão e ordena por autoridade (1-10)
             $pillars = [];
             foreach ($pillars_raw as $id => $p) {
                 if (check_permission($p['perm'], 'leitura')) {
@@ -137,8 +144,20 @@ if (strpos($page_active, 'produtos') !== false || strpos($page_active, 'categori
                 }
             }
 
-            // Lógica de Foco para Funcionários: se tiver apenas 1 pilar, ele abre automático
-            $is_employee = ($_SESSION['user_type'] === 'employee');
+            // --- MOTOR DE AUTORIDADE 360 (v2.19) ---
+            uasort($pillars, function($a, $b) {
+                return $b['priority'] - $a['priority'];
+            });
+
+            // Lógica de Redirecionamento 360 (Home Aware)
+            $is_employee = ($user_type === 'employee');
+            $home_url = '/admin/painel_admin.php';
+            
+            if ($is_employee && !empty($pillars)) {
+                $top_pillar = reset($pillars); // O de maior autoridade (sorted)
+                $home_url = $top_pillar['links'][0]['url'];
+            }
+
             $auto_expand_only = $is_employee && (count($pillars) === 1);
             ?>
 
@@ -177,80 +196,133 @@ if (strpos($page_active, 'produtos') !== false || strpos($page_active, 'categori
     </div>
 </aside>
 
-<!-- [DESKTOP/MOBILE] THE 360 TOPBAR -->
-<nav class="brasallis-topbar">
-    <!-- 1. LEFT: FAGULHA BRAND -->
-    <div class="d-flex align-items-center h-100">
-        <!-- Mobile Toggle (Mobile Only) -->
-        <div class="brasallis-toggle d-lg-none" onclick="history.back()">
-            <i class="fas fa-arrow-left text-secondary"></i>
-        </div>
-        <a href="/admin/painel_admin.php" class="d-flex align-items-center me-4">
-            <img src="/assets/img/pureza.png" alt="Fagulha" class="brasallis-fagulha">
+<!-- [DESKTOP/MOBILE] THE 360 TOPBAR (FLUENT ISLAND) -->
+<nav class="brasallis-topbar shadow-sm">
+    <!-- 1. BRAND -->
+    <div class="d-flex align-items-center">
+        <a href="<?= $home_url ?>" class="d-flex align-items-center me-3">
+            <img src="/assets/img/pureza.png" alt="Logo" style="height: 28px; width: auto; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));">
         </a>
     </div>
 
-    <!-- 2. CENTER: SEARCH COMMAND BOX -->
-    <div class="brasallis-search-container d-none d-xl-flex mx-auto shadow-none">
-        <i class="fas fa-terminal text-muted" style="font-size: 0.8rem;"></i>
-        <input type="text" class="brasallis-search-input" placeholder="Comando 360... (/)" autocomplete="off">
-        <kbd class="ms-2 bg-white border text-muted px-2 py-0 border-0" style="font-size: 0.65rem;">/</kbd>
+    <!-- 2. OMNI-SEARCH (POWER BAR) -->
+    <div class="flex-grow-1 d-flex justify-content-center">
+        <div class="brasallis-search-container">
+            <i class="fas fa-search text-muted opacity-40" style="font-size: 0.8rem;"></i>
+            <input type="text" class="brasallis-search-input" placeholder="Pesquisar comando 360... (Cmd + /)" autocomplete="off">
+            <div class="d-none d-md-flex align-items-center opacity-75 ms-2">
+                <kbd class="mac-shortcut">⌘ /</kbd>
+            </div>
+        </div>
     </div>
 
-    <!-- 3. RIGHT: PILLAR & PROFILE -->
-    <div class="d-flex align-items-center gap-3 h-100 ms-auto">
-        <!-- PILLAR CONTEXT -->
-        <div class="d-none d-lg-flex align-items-center gap-3 pe-4 border-end h-50">
-            <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
-                <i class="fas <?= $icon_main ?>" style="font-size: 0.85rem;"></i>
-            </div>
-            <div class="fw-bold text-secondary text-uppercase ls-1" style="font-size: 0.75rem;"><?= $module_name ?></div>
-        </div>
+    <!-- 3. ACTION CLUSTER -->
+    <div class="d-flex align-items-center gap-2">
+        <!-- AI Launcher -->
+        <button class="btn-ai-sparkle shadow-none border-0" onclick="window.openAgentChat()" title="Brasallis AI">
+            <i class="fas fa-wand-magic-sparkles" style="font-size: 0.85rem;"></i>
+        </button>
 
-        <div class="dropdown">
+        <!-- Profile Island -->
+        <div class="dropdown ms-2">
             <div class="profile-pill" data-bs-toggle="dropdown">
                 <?= substr($user_name, 0, 1) ?>
             </div>
-            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-3 rounded-4 p-2" style="width: 220px;">
-                <li class="px-3 py-2 border-bottom mb-2">
-                    <div class="small text-muted fw-bold"><?= htmlspecialchars($user_name) ?></div>
-                    <div class="text-xs text-muted" style="font-size: 0.65rem;"><?= htmlspecialchars($_SESSION['empresa_nome'] ?? 'Brasallis User') ?></div>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-solar mt-3 shadow-sm border-0" style="min-width: 260px;">
+                <li class="px-3 pb-2 pt-1 border-bottom border-light">
+                    <div class="d-flex flex-column">
+                        <div class="fw-bold text-dark fs-6" style="letter-spacing: -0.3px;"><?= htmlspecialchars($user_name) ?></div>
+                        <div class="text-muted" style="font-size: 0.70rem; font-weight: 500;">Administrador • ID #0<?= $_SESSION['empresa_id'] ?? '1' ?></div>
+                    </div>
                 </li>
-                <li><a class="dropdown-item rounded-3 py-2" href="/perfil.php"><i class="fas fa-user-circle me-3 opacity-50"></i>Meu Perfil</a></li>
-                <li><a class="dropdown-item rounded-3 py-2 text-danger" href="/sair.php"><i class="fas fa-power-off me-3"></i>Sair</a></li>
+                <li class="pt-2"><a class="dropdown-item py-2" href="/perfil.php"><i class="fas fa-user-circle me-2 text-muted"></i> Ajustes de Perfil</a></li>
+                <li><a class="dropdown-item py-2" href="#"><i class="fas fa-desktop me-2 text-muted"></i> Ajuste Local</a></li>
+                <li><a class="dropdown-item py-2" href="/admin/configuracoes.php"><i class="fas fa-sliders me-2 text-muted"></i> Opções de Sistema</a></li>
+                <li class="border-top border-light mt-2 pt-2"><a class="dropdown-item py-2 text-danger fw-bold" href="/sair.php"><i class="fas fa-power-off me-2"></i> Encerrar Sessão</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- [MOBILE] THE 360 LOWER NAVIGATION -->
+<!-- [MOBILE] THE 360 LOWER NAVIGATION (5-BUTTON APP RAIL) -->
 <?php
-$home_url = '/admin/painel_admin.php';
-if ($is_employee) {
-    // Busca o primeiro link do primeiro pilar disponível como "Home" para o funcionário
-    $first_pillar = reset($pillars);
-    if ($first_pillar) {
-        $home_url = $first_pillar['links'][0]['url'];
-    }
-}
+// MATRIZ DE AÇÕES RÁPIDAS 360 (Google/Microsoft Strategy)
+$default_actions = [
+    ['icon' => 'fa-shapes', 'label' => 'Home', 'url' => $home_url],
+    ['icon' => 'fa-magnifying-glass', 'label' => 'Busca', 'url' => '#', 'onclick' => 'toggleMobileSearch()'],
+    ['icon' => 'fa-box', 'label' => 'Stocks', 'url' => '/admin/produtos.php'],
+    ['icon' => 'fa-gear', 'label' => 'Sistema', 'url' => '/admin/configuracoes.php']
+];
+
+$module_actions = [
+    'Dashboard' => [
+        ['icon' => 'fa-chart-pie', 'label' => 'Resumo', 'url' => '/admin/painel_admin.php'],
+        ['icon' => 'fa-file-invoice-dollar', 'label' => 'P&L', 'url' => '/admin/relatorios.php'],
+        ['icon' => 'fa-user-tie', 'label' => 'Equipe', 'url' => '/modules/rh/views/index.php'],
+        ['icon' => 'fa-wand-magic-sparkles', 'label' => 'IA Hub', 'url' => '/admin/agentes_ia.php']
+    ],
+    'Estratégico' => [
+        ['icon' => 'fa-gauge-high', 'label' => 'Painel', 'url' => '/admin/painel_admin.php'],
+        ['icon' => 'fa-sack-dollar', 'label' => 'P&L', 'url' => '/admin/relatorios.php'],
+        ['icon' => 'fa-users-gear', 'label' => 'Equipe', 'url' => '/modules/rh/views/index.php'],
+        ['icon' => 'fa-sliders', 'label' => 'Sistema', 'url' => '/admin/configuracoes.php']
+    ],
+    'Estoque' => [
+        ['icon' => 'fa-plus-circle', 'label' => 'Novo', 'url' => '#', 'data_target' => 'addProductModal'],
+        ['icon' => 'fa-cart-shopping', 'label' => 'Compras', 'url' => '/admin/registrar_compra.php'],
+        ['icon' => 'fa-arrow-right-arrow-left', 'label' => 'Fluxo', 'url' => '/admin/movimentacoes.php'],
+        ['icon' => 'fa-tags', 'label' => 'Categorias', 'url' => '/admin/categorias.php']
+    ],
+    'RH' => [
+        ['icon' => 'fa-clock', 'label' => 'Ponto', 'url' => '/modules/rh/views/ponto.php'],
+        ['icon' => 'fa-users-gear', 'label' => 'Time', 'url' => '/modules/rh/views/colaboradores.php'],
+        ['icon' => 'fa-money-check-dollar', 'label' => 'Folha', 'url' => '/modules/rh/views/folha.php'],
+        ['icon' => 'fa-calendar-day', 'label' => 'Agenda', 'url' => '#']
+    ],
+    'Financeiro' => [
+        ['icon' => 'fa-file-circle-plus', 'label' => 'Receita', 'url' => '/modules/financeiro/views/index.php'],
+        ['icon' => 'fa-file-circle-minus', 'label' => 'Despesa', 'url' => '/modules/financeiro/views/movimentacoes.php'],
+        ['icon' => 'fa-chart-line', 'label' => 'Fluxo', 'url' => '/modules/financeiro/views/fluxo_caixa.php'],
+        ['icon' => 'fa-wallet', 'label' => 'Contas', 'url' => '/modules/financeiro/views/contas_receber.php']
+    ],
+    'Comercial' => [
+        ['icon' => 'fa-rocket', 'label' => 'Novo Deal', 'url' => '/modules/crm/views/kanban.php'],
+        ['icon' => 'fa-diagram-project', 'label' => 'Pipeline', 'url' => '/modules/crm/views/kanban.php'],
+        ['icon' => 'fa-cash-register', 'label' => 'PDV', 'url' => '/modules/pdv/views/index.php'],
+        ['icon' => 'fa-address-book', 'label' => 'Clientes', 'url' => '/admin/clientes.php']
+    ],
+    'Inteligência' => [
+        ['icon' => 'fa-comments', 'label' => 'Chat IA', 'url' => '/admin/agentes_ia.php'],
+        ['icon' => 'fa-robot', 'label' => 'Agentes', 'url' => '/admin/agentes_ia.php'],
+        ['icon' => 'fa-cube', 'label' => 'Blackbox', 'url' => '/admin/analytics_blackbox.php'],
+        ['icon' => 'fa-bolt-lightning', 'label' => 'Config IA', 'url' => '/admin/configuracoes.php']
+    ]
+];
+
+// Seleciona as ações baseadas no módulo ou usa as padrão
+$current_actions = $module_actions[$module_name] ?? $default_actions;
 ?>
+
 <nav class="brasallis-bottom-nav">
-    <a href="<?= $home_url ?>" class="bottom-nav-item <?= (strpos($_SERVER['PHP_SELF'], $home_url) !== false) ? 'active' : '' ?>">
-        <i class="fas fa-shapes"></i>
-        <span>Home</span>
-    </a>
-    <a href="#" class="bottom-nav-item" onclick="toggleMobileSearch()">
-        <i class="fas fa-magnifying-glass"></i>
-        <span>Busca</span>
-    </a>
-    <a href="/admin/produtos.php" class="bottom-nav-item">
-        <i class="fas fa-box"></i>
-        <span>Stocks</span>
-    </a>
+    <?php foreach($current_actions as $index => $act): ?>
+    
+    <!-- Se for o terceiro item, criamos o botão "HUB" central nativo -->
+    <?php if ($index == 2): ?>
     <a href="#" class="bottom-nav-item" data-bs-toggle="offcanvas" data-bs-target="#brasallis360Offcanvas">
-        <i class="fas fa-grid-2"></i>
-        <span>Apps</span>
+        <i class="fas fa-layer-group"></i>
+        <span>Hub</span>
     </a>
+    <?php endif; ?>
+
+    <a href="<?= $act['url'] ?>" 
+       class="bottom-nav-item <?= (strpos($_SERVER['PHP_SELF'], $act['url']) !== false && $act['url'] !== '#') ? 'active' : '' ?>" 
+       <?= isset($act['onclick']) ? 'onclick="'.$act['onclick'].'"' : '' ?>
+       <?= isset($act['data_target']) ? 'data-bs-toggle="modal" data-bs-target="#'.$act['data_target'].'"' : '' ?>>
+        <i class="fas <?= $act['icon'] ?>"></i>
+        <span><?= $act['label'] ?></span>
+    </a>
+    
+    <?php endforeach; ?>
 </nav>
 
 <!-- [MOBILE] 360 APP DRAWER (Offcanvas) -->
@@ -262,16 +334,14 @@ if ($is_employee) {
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
-    <div class="offcanvas-body p-4 bg-light">
-        <div class="d-grid gap-3" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="offcanvas-body p-4 pt-1" style="background: rgba(255, 255, 255, 0.5);">
+        <div class="d-grid gap-y-4 gap-3" style="grid-template-columns: repeat(4, 1fr);">
             <?php foreach ($pillars as $id => $app): ?>
-            <div class="col-4">
-                <a href="<?= $app['links'][0]['url'] ?>" class="text-decoration-none d-block text-center p-3 rounded-4 bg-white shadow-sm hover-lift">
-                    <div class="rounded-4 mb-2 d-flex align-items-center justify-content-center mx-auto" style="width: 50px; height: 50px; background: <?= $app['color'] ?>10; color: <?= $app['color'] ?>;">
-                        <i class="fas <?= $app['icon'] ?> fs-4"></i>
-                    </div>
-                    <div class="small fw-bold text-dark" style="font-size: 0.65rem;"><?= strtoupper($app['label']) ?></div>
+            <div style="text-align: center;">
+                <a href="<?= $app['links'][0]['url'] ?>" class="app-library-icon">
+                    <i class="fas <?= $app['icon'] ?> fs-4"></i>
                 </a>
+                <div class="mt-2 text-dark" style="font-size: 0.60rem; font-weight: 500; letter-spacing: -0.2px;"><?= ucfirst($app['label']) ?></div>
             </div>
             <?php endforeach; ?>
         </div>

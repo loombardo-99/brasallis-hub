@@ -11,14 +11,27 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Modules\Admin\Controllers\ConfiguracaoController;
 
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+// --- AUDITORIA DE SEGURANÇA 360 (v2.17) ---
+$user_role = $_SESSION['user_type'] ?? '';
+if ($user_role !== 'admin' && $user_role !== 'super_admin') {
+    header('Location: /admin/dashboard_funcionario.php');
+    exit();
+}
+
 try {
     // Resolve as dependências da requisição e do controller através do Container
     $request  = $container->make(Request::class);
     $response = $container->make(Response::class);
     $controller = $container->make(ConfiguracaoController::class);
 
-    // Executa a ação padrão (exibição das configurações)
-    $controller->index($request, $response);
+    // Roteamento simples
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $controller->update($request, $response);
+    } else {
+        $controller->index($request, $response);
+    }
 } catch (Throwable $e) {
     // Caso ocorra erro na resolução, exibe de forma amigável (ou log)
     error_log("Erro no Shim Configuracoes: " . $e->getMessage());

@@ -25,21 +25,29 @@ class OrganizacaoRepository
     {
         $stmt = $this->pdo->prepare(
             "UPDATE empresas SET 
-                nome_fantasia = ?, 
+                name = ?, 
                 razao_social = ?, 
                 cnpj = ?, 
-                email_contato = ?, 
-                telefone = ?, 
-                endereco = ? 
+                email = ?, 
+                phone = ?, 
+                address = ?,
+                openai_api_key = ?,
+                gemini_api_key = ?,
+                mp_access_token = ?,
+                pagarme_key = ?
              WHERE id = ?"
         );
         return $stmt->execute([
-            $data['nome_fantasia'],
-            $data['razao_social'],
-            $data['cnpj'],
-            $data['email_contato'],
-            $data['telefone'],
-            $data['endereco'],
+            $data['nome_fantasia'] ?? '',
+            $data['razao_social'] ?? '',
+            $data['cnpj'] ?? '',
+            $data['email_contato'] ?? '',
+            $data['telefone'] ?? '',
+            $data['endereco'] ?? '',
+            $data['openai_api_key'] ?? null,
+            $data['gemini_api_key'] ?? null,
+            $data['mp_access_token'] ?? null,
+            $data['pagarme_key'] ?? null,
             $this->empresaId
         ]);
     }

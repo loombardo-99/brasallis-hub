@@ -76,6 +76,9 @@ class AdminController
             $ultimas_compras = $dashboardRepo->getUltimasCompras(5);
             $chart_data = $dashboardRepo->getSalesAndProfitOverTime('month');
             $forecast_data = $dashboardRepo->getSalesForecast(7);
+            
+            // Controle de Acesso: Funcionários Ativos
+            $active_employees_count = $dashboardRepo->getConnection()->query("SELECT COUNT(*) FROM usuarios WHERE empresa_id = {$empresa_id} AND user_type = 'employee'")->fetchColumn();
 
             // Validação de fallback para evitar Warnings PHP quebrando a sintaxe JS
             if (!is_array($chart_data)) $chart_data = [];

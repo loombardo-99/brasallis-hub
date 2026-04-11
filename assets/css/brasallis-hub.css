@@ -60,7 +60,7 @@ body {
 
 body.brasallis-expanded .brasallis-sidebar {
     width: var(--sidebar-width);
-    box-shadow: 15px 0 35px rgba(0, 0, 0, 0.03);
+    box-shadow: 10px 0 40px rgba(0, 0, 0, 0.08); /* Sombra elegante por cima da interface */
 }
 
 .brasallis-nav {
@@ -74,29 +74,30 @@ body.brasallis-expanded .brasallis-sidebar {
 .brasallis-item {
     display: flex;
     align-items: center;
-    height: 52px;
-    margin: 2px 10px;
+    height: 42px; /* macOS Compact Height */
+    margin: 2px 12px;
     padding: 0 14px;
     color: #64748b;
     text-decoration: none !important;
-    border-radius: 12px;
-    transition: var(--brasallis-transition);
+    border-radius: 8px; /* Softer, native roundness */
+    transition: background-color 0.25s ease, color 0.25s ease;
     cursor: pointer;
 }
 
 .brasallis-item i {
-    font-size: 1.3rem;
+    font-size: 1.1rem; /* Proportional scale */
     min-width: 24px;
     text-align: center;
 }
 
 .brasallis-item span {
-    margin-left: 18px;
-    font-weight: 600;
-    font-size: 0.9rem;
+    margin-left: 14px;
+    font-weight: 500;
+    font-size: 0.82rem;
+    letter-spacing: -0.15px; /* Apple UI tracking */
     opacity: 0;
-    transform: translateX(-10px);
-    transition: var(--brasallis-transition);
+    transform: translateX(-5px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 body.brasallis-expanded .brasallis-item span {
@@ -105,29 +106,33 @@ body.brasallis-expanded .brasallis-item span {
 }
 
 .brasallis-item:hover {
-    background: #f1f5f9;
-    color: var(--brasallis-primary);
+    background: rgba(0, 0, 0, 0.03); /* Subtle Hover */
+    color: #0A2647;
 }
 
-/* --- VIBRANT ICON COLORS --- */
-.brasallis-pillar[data-pillar="estratégico"] .brasallis-item i { color: #0f172a; }
-.brasallis-pillar[data-pillar="operacional"] .brasallis-item i { color: #2563eb; }
-.brasallis-pillar[data-pillar="pessoas"] .brasallis-item i { color: #10b981; }
-.brasallis-pillar[data-pillar="financeiro"] .brasallis-item i { color: #f59e0b; }
-.brasallis-pillar[data-pillar="comercial"] .brasallis-item i { color: #f97316; }
-.brasallis-pillar[data-pillar="inteligência"] .brasallis-item i { color: #8b5cf6; }
+/* --- CLEAN APPLE-LIKE ICONS --- */
+.brasallis-item i { color: #86868b; transition: color 0.3s ease; }
 
 /* Pillar Active State */
 .brasallis-pillar.active .brasallis-item {
-    background: #eff6ff;
-    color: var(--brasallis-primary);
+    background: rgba(10, 38, 71, 0.06); /* Soft Navy Transparency */
+    color: #0A2647;
 }
 
-/* --- THE 360 ACCORDION (Pure White) --- */
+.brasallis-pillar.active .brasallis-item i {
+    color: #0A2647;
+}
+
+/* --- THE 360 ACCORDION (Pure White & Fluid) --- */
 .pillar-accordion {
     max-height: 0;
+    opacity: 0;
     overflow: hidden;
-    transition: all 0.3s ease-out;
+    transform: scaleY(0.95);
+    transform-origin: top;
+    transition: max-height 0.35s cubic-bezier(0.25, 1, 0.5, 1), 
+                opacity 0.25s ease-out, 
+                padding 0.3s ease, margin 0.3s ease, transform 0.3s ease;
     background: #fafbfc;
     margin: 0 10px;
     border-radius: 10px;
@@ -135,15 +140,18 @@ body.brasallis-expanded .brasallis-item span {
 
 .brasallis-pillar.active .pillar-accordion {
     max-height: 500px;
+    opacity: 1;
+    transform: scaleY(1);
     margin-top: 4px;
     margin-bottom: 12px;
     padding: 8px 0;
     border: 1px solid #f1f5f9;
 }
 
-/* Force Reset on Collapse: Se a barra não está expandida, nada de acordeão aberto */
+/* Force Reset on Collapse: Sem gambiarras, 0 é 0 */
 body:not(.brasallis-expanded) .pillar-accordion {
     max-height: 0 !important;
+    opacity: 0 !important;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
@@ -165,100 +173,359 @@ body:not(.brasallis-expanded) .pillar-accordion {
     background: #f1f5f9;
 }
 
-/* --- PURE WHITE TOPBAR --- */
+/* --- MICROSOFT FLUENT ISLAND TOPBAR --- */
 .brasallis-topbar {
     position: fixed;
-    top: 0; right: 0; left: var(--sidebar-collapsed);
-    height: var(--topbar-height);
-    background: var(--topbar-bg);
+    top: 12px; 
+    right: 20px; 
+    left: calc(var(--sidebar-collapsed) + 20px);
+    height: 48px; /* Compact macOS Toolbar profile */
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
     z-index: 2000;
     display: flex;
     align-items: center;
-    padding: 0 25px;
-    transition: var(--brasallis-transition);
-    border-bottom: 1px solid var(--brasallis-border);
-}
-
-body.brasallis-expanded .brasallis-topbar { left: var(--sidebar-width); }
-
-.brasallis-fagulha {
-    height: 32px;
-    width: auto;
-    margin-right: 20px;
-}
-
-.brasallis-search-container {
-    background: #f8fafc;
+    padding: 0 20px;
     border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); /* Subtiler shadow */
+    transition: var(--brasallis-transition);
+}
+
+body.brasallis-expanded .brasallis-topbar { 
+    left: calc(var(--sidebar-width) + 20px); 
+}
+
+/* --- OMNI-SEARCH 'APPLE SPOTLIGHT PURE' --- */
+.brasallis-search-container {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
     padding: 6px 15px;
     display: flex;
     align-items: center;
-    width: 380px;
-    border: 1px solid #e2e8f0;
+    width: 480px;
+    border: 1px solid transparent;
+    transition: all 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+.brasallis-search-container:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+.brasallis-search-container:focus-within {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(10, 38, 71, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    width: 560px;
 }
 
 .brasallis-search-input {
     background: transparent; border: none; outline: none;
-    width: 100%; margin-left: 10px; font-size: 0.85rem;
+    width: 100%; margin-left: 10px; font-size: 0.88rem;
+    color: #1e293b; font-weight: 500;
+}
+.brasallis-search-input::placeholder {
+    color: #94a3b8;
+    transition: opacity 0.2s ease;
+}
+
+/* Glowing Aura on Focus */
+@keyframes search-aura {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.1); }
+    100% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0); }
+}
+.active-pulse { animation: search-aura 0.6s ease-out; }
+
+/* Mac Shortcut Key Wrapper */
+.mac-shortcut {
+    background: rgba(0,0,0,0.06);
+    color: #64748b;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.70rem;
+    padding: 2px 6px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+}
+
+/* --- AI & ACTION CLUSTER --- */
+.btn-ai-sparkle {
+    background: linear-gradient(135deg, #0070F2 0%, #10b981 100%);
+    color: #fff; width: 34px; height: 34px; border: none; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    transition: var(--brasallis-transition);
+}
+.btn-ai-sparkle:hover { transform: scale(1.05); }
+
+.profile-pill {
+    background: rgba(0, 0, 0, 0.03); /* Frosted Apple Gray */
+    color: #475569;
+    width: 36px; height: 36px;
+    border-radius: 50%; /* Pure Circle */
+    border: 1px solid rgba(0, 0, 0, 0.05); /* Imperceptible Outline */
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 0.85rem; cursor: pointer;
+    box-shadow: inset 0 2px 4px rgba(255,255,255,0.5); /* Inner Glass reflection */
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); /* Spring Hover */
+    text-transform: uppercase;
+}
+.profile-pill:hover { 
+    background: rgba(10, 38, 71, 0.06); 
+    color: #0A2647;
+    transform: scale(1.06);
+}
+
+.dropdown-menu-solar {
+    border: 1px solid rgba(226, 232, 240, 0.5) !important;
+    border-radius: 12px !important; /* Estética Compacta */
+    padding: 0.5rem !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+}
+
+.dropdown-item {
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 500;
     color: #1e293b;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item:active {
+    transform: scale(0.96);
+    background: rgba(0,0,0,0.05);
+}
+
+/* --- APP LIBRARY ICONS (Fase 2) --- */
+.app-library-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    margin: 0 auto;
+    border-radius: 14px; /* Squircle aspect */
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--brasallis-primary);
+    text-decoration: none !important;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+}
+
+.app-library-icon i {
+    color: #0A2647;
+    transition: transform 0.2s ease;
+}
+
+.app-library-icon:hover {
+    background: rgba(10, 38, 71, 0.08); /* Brasallis Navy Alpha */
+}
+
+.app-library-icon:active {
+    transform: scale(0.85); /* Efeito Mola iOS */
+}
+
+.profile-status {
+    width: 10px; height: 10px; border-radius: 2px; /* Status Quadrado Microsoft */
+    display: inline-block; margin-right: 8px;
+}
+.status-online { background: #10b981; }
+.status-offline { background: #94a3b8; }
+
+.profile-role {
+    font-size: 0.65rem; color: #64748b; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.5px;
 }
 
 .brasallis-main {
     padding-top: var(--topbar-height);
-    padding-left: var(--sidebar-collapsed);
+    padding-left: var(--sidebar-collapsed); /* Não muda mais, o menu flutua por cima */
     min-height: 100vh;
-    transition: var(--brasallis-transition);
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), 
+                border-radius 0.4s ease, filter 0.4s ease;
+    transform-origin: center center;
+    background-color: #f8fafc;
 }
 
-body.brasallis-expanded .brasallis-main { padding-left: var(--sidebar-width); }
-
-/* Profile Dropdown Refinement */
-.profile-pill {
-    background: var(--brasallis-primary);
-    color: #fff;
-    width: 36px; height: 36px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: bold; cursor: pointer;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+/* Base de preenchimento escuro para não ver o vácuo ao dar Scale Down no Mobile */
+body.mobile-scaling-active {
+    background-color: #000 !important; 
 }
+
+/* O "Empurrão para Trás" do iOS ao abrir Menus Overlays */
+body.mobile-scaling-active .brasallis-main {
+    transform: scale(0.92) translateY(5px);
+    border-radius: 20px;
+    filter: brightness(0.7) blur(2px);
+    overflow: hidden;
+    pointer-events: none; /* Previne clique por trás */
+}
+
+.brasallis-bottom-nav { display: none; }
+
 @media (max-width: 991px) {
     .brasallis-sidebar { display: none; }
-    .brasallis-topbar { left: 0 !important; padding: 0 15px; }
+    .brasallis-topbar { 
+        left: 10px !important; right: 10px !important; 
+        width: calc(100% - 20px) !important; 
+        top: 10px;
+    }
     .brasallis-main { padding-left: 0 !important; }
-    
-    /* --- MOBILE BOTTOM NAV (Elite 4-Item) --- */
+
+    /* --- MOBILE BOTTOM NAV: APPLE iOS TAB BAR --- */
     .brasallis-bottom-nav {
+        display: flex;
         position: fixed;
         bottom: 0; left: 0; right: 0;
-        height: 65px;
-        background: #ffffff;
-        display: flex;
+        height: 80px; /* Apple Standard bottom clear height */
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(25px) saturate(200%);
+        -webkit-backdrop-filter: blur(25px) saturate(200%);
         align-items: center;
         justify-content: space-around;
-        border-top: 1px solid var(--brasallis-border);
+        border-top: 0.5px solid rgba(0, 0, 0, 0.1);
         z-index: 2500;
         padding-bottom: env(safe-area-inset-bottom);
+        padding-left: 10px;
+        padding-right: 10px;
+        box-shadow: none;
     }
 
     .bottom-nav-item {
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         text-decoration: none !important;
-        color: #94a3b8;
+        color: #86868b; /* Apple System Gray */
         font-size: 0.65rem;
-        font-weight: 600;
-        transition: var(--brasallis-transition);
-        flex: 1;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        height: 100%;
+        width: 20%;
+        padding-top: 5px;
     }
 
     .bottom-nav-item i {
-        font-size: 1.2rem;
-        margin-bottom: 4px;
+        font-size: 1.45rem;
+        margin-bottom: 3px;
+        transition: transform 0.2s ease;
     }
 
-    .bottom-nav-item.active {
-        color: var(--brasallis-primary);
+    .bottom-nav-item.active, .bottom-nav-item:active {
+        color: #0A2647; /* Brasallis Active Navy */
+    }
+    
+    .bottom-nav-item:active i {
+        transform: scale(0.9);
     }
 }
+
+/* --- APPLE PURE: EXECUTIVE UI KIT --- */
+.exec-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 1.75rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    height: 100%;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.exec-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
+}
+
+.exec-card.dark-panel {
+    background: #111827;
+    color: #fff;
+    border: none;
+}
+
+.metric-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #86868b;
+}
+
+.metric-value {
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: #1d1d1f;
+    margin-bottom: 0.25rem;
+}
+
+.dark-panel .metric-value { color: #fff; }
+
+.progress-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #0A2647;
+    border-radius: 10px;
+    transition: width 1s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.clickable-card {
+    text-decoration: none !important;
+    display: block;
+    height: 100%;
+}
+
+.clickable-card:active .exec-card {
+    transform: scale(0.96);
+}
+
+/* Funnel & Lists */
+.funnel-stage {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.apple-table-container {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.apple-table th {
+    background: #fbfbfd;
+    color: #86868b;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.apple-table td {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+    color: #1d1d1f;
+    font-weight: 500;
+    font-size: 0.88rem;
+}
+
+.apple-table tr:last-child td { border-bottom: none; }
+

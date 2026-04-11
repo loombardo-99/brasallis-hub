@@ -27,7 +27,6 @@ services:
       - "3307:3306"
     volumes:
       - ./database/data:/var/lib/mysql
-      - ./dump_real.sql.sql:/docker-entrypoint-initdb.d/init.sql
 
   # Interface de Gestão do Banco
   phpmyadmin:

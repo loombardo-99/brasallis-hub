@@ -147,116 +147,128 @@ include_once '../includes/cabecalho.php';
         <input type="hidden" name="action" value="register_purchase">
         <input type="hidden" name="items_json" id="itemsJson">
 
-        <div class="row g-4">
+        <div class="row g-4" style="min-height: 75vh;">
             
-            <!-- LEFT PANE: SOURCE & AI -->
-            <div class="col-lg-5">
-                <!-- Card 1: Upload & Scan -->
-                <div class="card shadow-sm mb-4 border-0">
-                    <div class="card-header bg-primary text-white py-3">
-                        <h6 class="m-0 fw-bold"><i class="fas fa-file-invoice me-2"></i>Digitalizar Nota Fiscal</h6>
+            <!-- LEFT PANE: REAL-TIME INVOICE VIEWER -->
+            <div class="col-lg-5 position-relative">
+                <div class="card shadow-sm border-0 h-100" style="position: sticky; top: 20px;">
+                    <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center" style="background-color: #0A2647 !important;">
+                        <h6 class="m-0 fw-bold"><i class="fas fa-file-invoice me-2"></i>Documento Original</h6>
+                        <button type="button" class="btn btn-sm btn-outline-light d-none" id="btnNovaNota" onclick="resetFile()"><i class="fas fa-sync-alt me-1"></i>Trocar Nota</button>
                     </div>
-                    <div class="card-body text-center p-4">
-                        <div class="upload-zone border dashed p-4 rounded bg-light mb-3" id="dropZone">
+                    
+                    <div class="card-body p-0 d-flex flex-column align-items-center justify-content-center bg-light" id="viewerContainer" style="min-height: 60vh; overflow: hidden;">
+                        
+                        <!-- Upload State -->
+                        <div class="upload-zone text-center p-5 w-100 h-100 d-flex flex-column justify-content-center align-items-center" id="dropZone" style="border: 2px dashed #cbd5e1; cursor: pointer; transition: 0.2s;">
                             <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">Arraste a nota (PDF/Imagem) ou clique</h5>
+                            <h5 class="text-muted fw-bold">Anexe a Nota Fiscal</h5>
+                            <p class="text-muted small mb-3">Arraste um PDF ou Imagem, ou clique aqui.</p>
                             <input type="file" name="fiscal_note" id="fiscalNoteInput" class="d-none" accept=".pdf, .jpg, .jpeg, .png">
-                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" onclick="document.getElementById('fiscalNoteInput').click()">Selecionar Arquivo</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('fiscalNoteInput').click()">Selecionar Arquivo do Computador</button>
+                        </div>
+
+                        <!-- Viewer State -->
+                        <div id="fileViewerWrapper" class="w-100 h-100 d-none bg-dark position-relative">
+                            <!-- Injected iframe or img -->
                         </div>
                         
-                        <!-- AI Status -->
-                        <div id="aiStatus" class="d-none">
-                            <div class="d-flex align-items-center justify-content-center text-primary mb-2">
+                    </div>
+                    
+                    <!-- AI Processing Footer -->
+                    <div class="card-footer bg-white p-3 border-top text-center" id="aiActionFooter" style="display: none;">
+                        <div id="aiStatus" class="d-none mb-3">
+                            <div class="d-flex align-items-center justify-content-center text-primary mb-2" style="color: #2C7865 !important;">
                                 <div class="spinner-border spinner-border-sm me-2"></div>
-                                <strong>Lendo nota com Inteligência Artificial...</strong>
+                                <strong>Analisando nota fiscal com I.A... Aguarde.</strong>
                             </div>
-                            <div class="progress" style="height: 5px;">
-                                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
-                            </div>
-                        </div>
-
-                        <!-- File Preview (Simple) -->
-                        <div id="filePreview" class="mt-3 text-start d-none">
-                            <div class="alert alert-secondary d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-paperclip me-2"></i><span id="fileName">arquivo.pdf</span></span>
-                                <span class="badge bg-success">Carregado</span>
+                            <div class="progress" style="height: 4px;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 100%"></div>
                             </div>
                         </div>
 
-                        <button type="button" class="btn btn-primary w-100 mt-3" id="processAiBtn" disabled>
-                            <i class="fas fa-magic me-2"></i>Extrair Dados Automaticamente
+                        <button type="button" class="btn btn-success w-100 btn-lg shadow-sm" id="processAiBtn" style="background-color: #2C7865; border-color: #2C7865;">
+                            <i class="fas fa-robot me-2"></i>Ler Dados Automaticamente
                         </button>
-                    </div>
-                </div>
-
-                <!-- Card 2: Header Data -->
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white py-3">
-                        <h6 class="m-0 fw-bold text-dark">Dados do Cabeçalho</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <label class="form-label small text-uppercase text-muted fw-bold">Fornecedor</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light"><i class="fas fa-truck"></i></span>
-                                <select name="supplier_id" class="form-select" required>
-                                    <option value="">Selecione...</option>
-                                    <?php foreach ($suppliers as $s): ?>
-                                        <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="form-text">Se não encontrar, cadastre em Fornecedores.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small text-uppercase text-muted fw-bold">Data de Emissão</label>
-                            <input type="date" name="purchase_date" class="form-control" value="<?= date('Y-m-d') ?>" required>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- RIGHT PANE: EXTRACTED ITEMS -->
+            <!-- RIGHT PANE: DATA VALIDATION & ITEMS -->
             <div class="col-lg-7">
+                
+                <!-- Error Banner -->
+                <div class="alert alert-danger d-none shadow-sm mb-3" id="aiErrorBanner">
+                    <h6 class="fw-bold mb-1"><i class="fas fa-exclamation-circle me-2"></i>Falha na Leitura Inteligente</h6>
+                    <span id="aiErrorText"></span>
+                </div>
+
+                <!-- Card 2: Header Data -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white py-3">
+                        <h6 class="m-0 fw-bold text-dark">Propriedades da Transação</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-7 mb-3">
+                                <label class="form-label small text-uppercase text-muted fw-bold">Fornecedor Identificado</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-truck"></i></span>
+                                    <select name="supplier_id" class="form-select" required>
+                                        <option value="">Selecione...</option>
+                                        <?php foreach ($suppliers as $s): ?>
+                                            <option value="<?= $s['id'] ?>"><?= htmlspecialchars($s['name']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-5 mb-3">
+                                <label class="form-label small text-uppercase text-muted fw-bold">Data de Emissão</label>
+                                <input type="date" name="purchase_date" class="form-control" value="<?= date('Y-m-d') ?>" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card shadow-sm h-100 border-0">
                     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                        <h6 class="m-0 fw-bold text-primary">Itens da Nota & Classificação Fiscal</h6>
-                        <span class="badge bg-light text-dark border" id="itemCountBadge">0 Itens</span>
+                        <h6 class="m-0 fw-bold" style="color: #0A2647;">Itens Extraídos & Classificação Fiscal</h6>
+                        <span class="badge bg-light text-dark border px-3 py-2" id="itemCountBadge">0 Itens</span>
                     </div>
                     
                     <!-- Manual Add Toolbar -->
                     <div class="p-3 bg-light border-bottom">
                         <div class="input-group">
-                            <input type="text" id="manualSearch" class="form-control" placeholder="Adicionar item manualmente (Nome/SKU)...">
-                            <button class="btn btn-outline-secondary" type="button" id="manualAddBtn"><i class="fas fa-plus"></i></button>
+                            <input type="text" id="manualSearch" class="form-control" placeholder="Adicionar item manualmente se a IA não identificou (Nome/SKU)...">
+                            <button class="btn btn-outline-secondary" type="button" id="manualAddBtn"><i class="fas fa-plus"></i> Manual</button>
                         </div>
-                        <div id="manualSearchResults" class="list-group position-absolute shadow w-50" style="z-index: 1000; display:none; margin-top: 40px;"></div>
                     </div>
 
-                    <div class="card-body p-0" style="max-height: 600px; overflow-y: auto; background-color: #f8f9fa;">
+                    <div class="card-body p-0" style="max-height: 50vh; overflow-y: auto; background-color: #f8f9fa;">
                         <!-- Items Container -->
                         <div id="itemsContainer" class="p-3">
                             <div class="text-center text-muted py-5" id="emptyState">
-                                <i class="fas fa-box-open fa-3x mb-3 opacity-50"></i>
-                                <p>Nenhum item adicionado.</p>
-                                <p class="small">Faça upload da nota ou adicione manualmente.</p>
+                                <div class="avatar bg-white border shadow-sm mx-auto mb-3" style="width:60px; height:60px; display:flex; align-items:center; justify-content:center; border-radius:50%;">
+                                    <i class="fas fa-boxes fa-2x text-muted opacity-50"></i>
+                                </div>
+                                <h6 class="fw-bold">Nenhum Produto Carregado</h6>
+                                <p class="small mb-0">Envie a nota fiscal para o robô preencher automaticamente,<br>ou insira manualmente no botão acima.</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Footer Summary -->
                     <div class="card-footer bg-white p-4 border-top">
-                        <div class="row align-items-center">
+                        <div class="row align-items-center mb-3">
                             <div class="col-md-6">
-                                <h5 class="mb-0 text-muted">Total da Nota</h5>
+                                <h5 class="mb-0 text-muted">Total a Pagar / Lançar</h5>
                             </div>
                             <div class="col-md-6 text-end">
-                                <h3 class="mb-0 fw-bold text-dark" id="displayTotal">R$ 0,00</h3>
+                                <h2 class="mb-0 fw-bold" id="displayTotal" style="color: #0A2647;">R$ 0,00</h2>
                             </div>
                         </div>
-                        <hr>
-                        <button type="submit" class="btn btn-success w-100 btn-lg shadow-sm">
-                            <i class="fas fa-check-circle me-2"></i>Confirmar e Lançar Estoque
+                        <button type="submit" class="btn btn-lg w-100 text-white fw-bold hover-lift" style="background-color: #0A2647;">
+                            <i class="fas fa-check-circle me-2"></i>Registrar Título e Somar Estoque
                         </button>
                     </div>
                 </div>
@@ -316,10 +328,16 @@ include_once '../includes/cabecalho.php';
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const fiscalNoteInput = document.getElementById('fiscalNoteInput');
+    const dropZone = document.getElementById('dropZone');
+    const fileViewerWrapper = document.getElementById('fileViewerWrapper');
+    const aiActionFooter = document.getElementById('aiActionFooter');
+    const btnNovaNota = document.getElementById('btnNovaNota');
+
     const processAiBtn = document.getElementById('processAiBtn');
     const aiStatus = document.getElementById('aiStatus');
-    const filePreview = document.getElementById('filePreview');
-    const fileName = document.getElementById('fileName');
+    const aiErrorBanner = document.getElementById('aiErrorBanner');
+    const aiErrorText = document.getElementById('aiErrorText');
+    
     const itemsContainer = document.getElementById('itemsContainer');
     const emptyState = document.getElementById('emptyState');
     const itemsJsonInput = document.getElementById('itemsJson');
@@ -327,24 +345,54 @@ document.addEventListener('DOMContentLoaded', function() {
     const itemCountBadge = document.getElementById('itemCountBadge');
     
     let items = []; // Array to store current items
+    
+    // Configura UI quando tiver arquivo
+    function setupViewer(file) {
+        const fileURL = URL.createObjectURL(file);
+        
+        dropZone.classList.add('d-none');
+        fileViewerWrapper.classList.remove('d-none');
+        aiActionFooter.style.display = 'block';
+        btnNovaNota.classList.remove('d-none');
+        aiErrorBanner.classList.add('d-none'); // Limpa erros antigos
+
+        if (file.type === 'application/pdf') {
+            fileViewerWrapper.innerHTML = `<iframe src="${fileURL}" class="w-100 h-100 border-0" style="min-height: 60vh;"></iframe>`;
+        } else if (file.type.startsWith('image/')) {
+            fileViewerWrapper.innerHTML = `<img src="${fileURL}" class="img-fluid w-100 h-100 object-fit-contain p-2" alt="Preview da Nota">`;
+        } else {
+            fileViewerWrapper.innerHTML = `<div class="d-flex w-100 h-100 align-items-center justify-content-center bg-dark text-white p-4 text-center">Formato não suportado para visualização rica, mas poderá ser enviado.</div>`;
+        }
+    }
+
+    // Reset UI global
+    window.resetFile = function() {
+        fiscalNoteInput.value = '';
+        dropZone.classList.remove('d-none');
+        fileViewerWrapper.classList.add('d-none');
+        fileViewerWrapper.innerHTML = '';
+        aiActionFooter.style.display = 'none';
+        btnNovaNota.classList.add('d-none');
+    };
 
     // 1. File Selection Handler
     fiscalNoteInput.addEventListener('change', function() {
         if (this.files.length > 0) {
-            fileName.textContent = this.files[0].name;
-            filePreview.classList.remove('d-none');
-            processAiBtn.disabled = false;
+            setupViewer(this.files[0]);
         }
     });
 
     // 2. AI Processing
     processAiBtn.addEventListener('click', function() {
         const file = fiscalNoteInput.files[0];
+        if(!file) return;
+
         const formData = new FormData();
         formData.append('file', file);
 
         aiStatus.classList.remove('d-none');
         processAiBtn.disabled = true;
+        aiErrorBanner.classList.add('d-none');
 
         fetch('../api/process_invoice_upload.php', {
             method: 'POST',
@@ -356,17 +404,27 @@ document.addEventListener('DOMContentLoaded', function() {
             processAiBtn.disabled = false;
 
             if (data.success) {
-                handleAiResult(data.data);
+                // Checa se a chave do Google devolveu erro como dado
+                if (data.data.error) {
+                    showAiError(data.data.error);
+                } else {
+                    handleAiResult(data.data);
+                }
             } else {
-                alert('Erro na extração: ' + (data.error || 'Desconhecido'));
+                showAiError(data.error || 'Erro desconhecido de execução.');
             }
         })
         .catch(err => {
             aiStatus.classList.add('d-none');
             processAiBtn.disabled = false;
-            alert('Erro de rede: ' + err.message);
+            showAiError('Falha de Rede/Conexão: ' + err.message);
         });
     });
+
+    function showAiError(msg) {
+        aiErrorText.textContent = msg;
+        aiErrorBanner.classList.remove('d-none');
+    }
 
     // 3. Handle AI Data
     function handleAiResult(data) {

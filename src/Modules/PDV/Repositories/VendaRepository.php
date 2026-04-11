@@ -42,6 +42,11 @@ class VendaRepository
         $stmtItems->execute([$id]);
         $venda['items'] = $stmtItems->fetchAll(PDO::FETCH_ASSOC);
 
+        // Buscar pagamentos vinculados
+        $stmtPayments = $this->pdo->prepare("SELECT metodo_pagamento, valor FROM venda_pagamentos WHERE venda_id = ?");
+        $stmtPayments->execute([$id]);
+        $venda['pagamentos'] = $stmtPayments->fetchAll(PDO::FETCH_ASSOC);
+
         return $venda;
     }
 
@@ -75,6 +80,19 @@ class VendaRepository
             $itemData['quantity'],
             $itemData['unit_price'],
             $itemData['subtotal']
+        ]);
+    }
+
+    public function addPayment(array $paymentData): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO venda_pagamentos (venda_id, metodo_pagamento, valor) 
+             VALUES (?, ?, ?)"
+        );
+        return $stmt->execute([
+            $paymentData['venda_id'],
+            $paymentData['metodo_pagamento'],
+            $paymentData['valor']
         ]);
     }
 }

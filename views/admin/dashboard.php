@@ -2,78 +2,90 @@
 
 <style>
     :root {
-        --m3-surface: #f8f9fa;
-        --m3-primary: #111827;
-        --m3-on-primary: #ffffff;
-        --m3-primary-container: #f3f4f6;
-        --m3-secondary: #4b5563;
-        --m3-accent: #2563eb;
-        --m3-success: #10b981;
-        --m3-warning: #f59e0b;
-        --m3-danger: #ef4444;
+        --apple-bg: #f5f5f7;
+        --apple-card: rgba(255, 255, 255, 0.82);
+        --apple-text: #1d1d1f;
+        --apple-text-secondary: #86868b;
+        --apple-navy: #0A2647;
+        --apple-emerald: #2C7865;
+        --apple-border: rgba(0, 0, 0, 0.04);
+        --apple-shadow: 0 8px 30px rgba(0,0,0,0.04);
     }
 
-    body { background-color: var(--m3-surface); font-family: 'Inter', system-ui, sans-serif; }
+    body { background-color: var(--apple-bg); font-family: 'SF Pro Display', 'Inter', system-ui, sans-serif; color: var(--apple-text); }
     
-    .commander-container { padding: 2rem; max-width: 1600px; margin: 0 auto; }
+    .commander-container { padding: 3rem 2rem; max-width: 1400px; margin: 0 auto; }
     
-    /* Commander Header */
-    .greeting { font-size: 2.25rem; font-weight: 900; color: #111827; letter-spacing: -1px; }
-    .executive-text { color: #6b7280; font-weight: 500; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 1px; }
+    /* Apple Header */
+    .greeting { font-size: 2.8rem; font-weight: 700; color: var(--apple-text); letter-spacing: -1.2px; }
+    .executive-text { color: var(--apple-text-secondary); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; }
 
-    /* Executive Cards */
+    /* Apple Cards (Glassmorphism) */
     .exec-card {
-        background: white; border-radius: 24px; padding: 1.5rem; border: 1px solid #e5e7eb;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease, box-shadow 0.2s ease;
-        height: 100%; display: flex; flex-direction: column;
+        background: var(--apple-card);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-radius: 28px;
+        padding: 2rem;
+        border: 1px solid var(--apple-border);
+        box-shadow: var(--apple-shadow);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
-    .exec-card:hover { transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .exec-card:hover { 
+        transform: scale(1.02); 
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08); 
+    }
+    .exec-card:active {
+        transform: scale(0.98);
+    }
     
-    .metric-value { font-size: 2rem; font-weight: 800; color: #111827; letter-spacing: -0.5px; }
-    .metric-label { font-size: 0.85rem; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+    .metric-value { font-size: 2.2rem; font-weight: 700; color: var(--apple-text); letter-spacing: -1px; margin-bottom: 0.25rem; }
+    .metric-label { font-size: 0.85rem; font-weight: 500; color: var(--apple-text-secondary); letter-spacing: -0.2px; }
     
-    .trend-up { color: var(--m3-success); font-weight: 700; font-size: 0.9rem; }
-    .trend-down { color: var(--m3-danger); font-weight: 700; font-size: 0.9rem; }
-    .trend-neutral { color: var(--m3-secondary); font-weight: 700; font-size: 0.9rem; }
+    .trend-up { color: #008000; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 4px; }
+    .trend-down { color: #ff3b30; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 4px; }
 
-    /* Progress & Goals */
-    .progress-track { background-color: #f3f4f6; border-radius: 99px; height: 12px; overflow: hidden; width: 100%; mt-2;}
-    .progress-fill { height: 100%; border-radius: 99px; transition: width 1s ease-in-out; }
-    .bg-gradient-primary { background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%); }
-    .bg-gradient-success { background: linear-gradient(90deg, #059669 0%, #10b981 100%); }
+    /* Progress & Goals (Thin Apple Style) */
+    .progress-track { background-color: rgba(0,0,0,0.05); border-radius: 99px; height: 6px; overflow: hidden; width: 100%; margin-top: 1rem; }
+    .progress-fill { height: 100%; border-radius: 99px; transition: width 1s ease-in-out; background: var(--apple-navy); }
 
-    /* Funnel & Projects */
-    .funnel-stage { padding: 1rem; border-radius: 16px; background: #f9fafb; border: 1px dashed #d1d5db; margin-bottom: 0.75rem; display: flex; justify-content: space-between; align-items: center; }
-    .funnel-stage strong { color: #374151; font-size: 1.1rem; }
+    /* Funnel (Subtle Layering) */
+    .funnel-stage { 
+        padding: 1.2rem; 
+        border-radius: 20px; 
+        background: rgba(0,0,0,0.02); 
+        border: 1px solid transparent; 
+        margin-bottom: 1rem; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        transition: all 0.2s ease;
+    }
+    .funnel-stage:hover { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.05); }
 
-    /* Dark Panel */
-    .dark-panel { background: #111827; color: white; border-radius: 24px; padding: 1.5rem; }
+    /* Dark Panel (Executive Black) */
+    .dark-panel { background: #1d1d1f; color: white; border-radius: 28px; }
     .dark-panel .metric-value { color: white; }
-    .dark-panel .metric-label { color: #9ca3af; }
+    .dark-panel .metric-label { color: #86868b; }
 
-    /* Interactive Elevate */
-    .hover-lift { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease; }
-    .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08) !important; z-index: 10; position:relative;}
-    .clickable-card { text-decoration: none !important; color: inherit; display: block; height: 100%; }
+    .clickable-card { text-decoration: none !important; color: inherit; }
     .has-tooltip { cursor: help; }
-    .funnel-stage:hover { transform: scale(1.02); background-color: #f8fafc; border-color: #3b82f6 !important; }
 </style>
 
 <div class="commander-container">
     <!-- Header -->
-    <div class="row align-items-end mb-4 pb-2 border-bottom">
-        <div class="col-lg-8 pb-3">
-            <div class="executive-text mb-1"><i class="fas fa-chess-king me-2"></i>Brasallis Commander</div>
-            <h1 class="greeting">Painel Executivo: <?= htmlspecialchars($_SESSION['empresa_nome'] ?? 'Empresa') ?></h1>
-            <p class="text-muted mb-0 mt-2">Visão estratégica atualizada em tempo real para tomada de decisão.</p>
+    <div class="row align-items-center mb-5 pb-4 border-bottom border-light">
+        <div class="col-lg-8">
+            <div class="executive-text mb-2"><i class="fas fa-sparkles me-1 text-primary"></i> Brasallis Executive Hub</div>
+            <h1 class="greeting"><?= htmlspecialchars($_SESSION['empresa_nome'] ?? 'Dashboard') ?></h1>
+            <p class="text-muted mb-0 mt-2" style="font-weight: 500;">Visão estratégica analítica da operação.</p>
         </div>
-        <!-- HIDDEN ACTION TEMPLATE (Elite v3) -->
-        <div id="page-quick-actions" class="d-none">
-            <a href="relatorios_avancados.php" class="btn btn-dark rounded-4 px-3 py-2 fw-bold shadow-sm d-inline-flex align-items-center" style="font-size: 0.85rem;">
-                <i class="fas fa-file-invoice-dollar me-2"></i> Relatórios DRE
-            </a>
-            <button class="btn btn-outline-primary rounded-4 px-3 py-2 fw-bold" style="font-size: 0.85rem;" onclick="window.location.reload()">
-                <i class="fas fa-sync-alt me-2"></i> Atualizar Dados
+        <div class="col-lg-4 text-end d-none d-lg-block">
+             <button class="btn btn-white shadow-sm border-0 rounded-pill px-4 py-2 fw-bold" style="font-size: 0.8rem; background: white;" onclick="window.location.reload()">
+                <i class="fas fa-rotate me-2 opacity-50"></i> Sincronizar Dados
             </button>
         </div>
     </div>
@@ -85,11 +97,11 @@
     <div class="row g-3 mb-5">
         <?php foreach(array_slice($critical_insights, 0, 2) as $insight): ?>
         <div class="col-md-6">
-            <div class="alert alert-<?= $insight['type'] === 'danger' ? 'danger' : 'primary' ?> border-0 shadow-sm rounded-4 d-flex align-items-center m-0" style="background-color: <?= $insight['type'] === 'danger' ? '#fef2f2' : '#eff6ff' ?>;">
-                <i class="fas <?= $insight['icon'] ?> fa-2x me-3 <?= $insight['type'] === 'danger' ? 'text-danger' : 'text-primary' ?> opacity-75"></i>
+            <div class="exec-card p-3 d-flex align-items-center" style="background: <?= $insight['type'] === 'danger' ? 'rgba(255, 59, 48, 0.05)' : 'rgba(0, 122, 255, 0.05)' ?>; border: none;">
+                <i class="fas <?= $insight['icon'] ?> fa-xl me-3 <?= $insight['type'] === 'danger' ? 'text-danger' : 'text-primary' ?> opacity-70"></i>
                 <div>
-                    <h6 class="fw-bold mb-1 text-dark"><?= $insight['title'] ?></h6>
-                    <span class="small mb-0 text-muted"><?= $insight['description'] ?></span>
+                    <h6 class="fw-bold mb-0 text-dark" style="font-size: 0.9rem;"><?= $insight['title'] ?></h6>
+                    <span class="small text-muted" style="font-size: 0.75rem;"><?= $insight['description'] ?></span>
                 </div>
             </div>
         </div>
@@ -97,63 +109,59 @@
     </div>
     <?php endif; ?>
 
-    <!-- SECTION 2: Saúde Financeira e Metas (O Caixa) -->
-    <div class="mb-5 p-4 rounded-4" style="background-color: #ffffff; border: 1px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
-        <h5 class="fw-bold mb-4 d-flex align-items-center text-dark">
-            <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 1rem;">1</span>
-            Desempenho Financeiro e Metas
-        </h5>
+    <!-- SECTION 2: Saúde Financeira e Metas -->
+    <div class="mb-5">
         <div class="row g-4">
             <!-- Vendas Meta -->
             <div class="col-md-4">
-                <a href="relatorios.php" class="clickable-card hover-lift">
-                    <div class="exec-card" style="box-shadow: none; border-color: #f3f4f6; background-color: #f8fafc;">
-                        <div class="d-flex justify-content-between mb-3">
+                <a href="relatorios.php" class="clickable-card">
+                    <div class="exec-card">
+                        <div class="d-flex justify-content-between mb-4">
                             <span class="metric-label">Meta de Faturamento</span>
-                            <i class="fas fa-bullseye text-primary bg-primary-subtle p-2 rounded-circle"></i>
+                            <i class="fas fa-bullseye text-dark opacity-10 fs-5"></i>
                         </div>
-                        <div class="metric-value mb-1">R$ <?= number_format($metas_exec['vendas']['atual'], 2, ',', '.') ?></div>
-                        <p class="small text-muted fw-bold mb-3">de meta calculada R$ <?= number_format($metas_exec['vendas']['meta'], 2, ',', '.') ?></p>
+                        <div class="metric-value">R$ <?= number_format($metas_exec['vendas']['atual'], 2, ',', '.') ?></div>
+                        <div class="metric-label mb-3">de meta calculada R$ <?= number_format($metas_exec['vendas']['meta'], 2, ',', '.') ?></div>
                         
                         <div class="mt-auto">
-                            <div class="d-flex justify-content-between small fw-bold mb-1">
-                                <span>Atingimento</span>
-                                <span class="text-primary"><?= number_format($metas_exec['vendas']['progresso_percent'], 1) ?>%</span>
+                            <div class="d-flex justify-content-between small fw-bold mb-2">
+                                <span class="metric-label">Atingimento</span>
+                                <span class="text-dark"><?= number_format($metas_exec['vendas']['progresso_percent'], 1) ?>%</span>
                             </div>
-                            <div class="progress-track"><div class="progress-fill bg-gradient-primary" style="width: <?= $metas_exec['vendas']['progresso_percent'] ?>%"></div></div>
+                            <div class="progress-track"><div class="progress-fill" style="width: <?= $metas_exec['vendas']['progresso_percent'] ?>%"></div></div>
                         </div>
                     </div>
                 </a>
             </div>
 
-            <!-- Saúde Financeira -->
+            <!-- Saúde Financeira (Focused Dark) -->
             <div class="col-md-4">
-                <a href="relatorios_avancados.php" class="clickable-card hover-lift">
-                    <div class="exec-card dark-panel border-0 shadow-lg" style="background: linear-gradient(135deg, #111827 0%, #1f2937 100%);">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="metric-label has-tooltip" style="color: #9ca3af;" title="Calculado sobre os últimos 30 dias, subtraindo o preço de custo histórico cadastrado nos lotes.">Margem Liquida Estimada <i class="fas fa-circle-question opacity-50 ms-1"></i></span>
-                            <i class="fas fa-hand-holding-dollar text-success bg-white bg-opacity-10 p-2 rounded-circle"></i>
+                <a href="relatorios_avancados.php" class="clickable-card">
+                    <div class="exec-card dark-panel">
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="metric-label">Margem Líquida</span>
+                            <i class="fas fa-hand-holding-dollar opacity-20 fs-5 text-white"></i>
                         </div>
-                        <div class="metric-value mb-1 text-white"><?= number_format($exec_health['margem_lucro'], 1) ?>%</div>
-                        <div class="trend-up mt-2 text-success has-tooltip" title="Retorno Sobre o Investimento: Demonstra o lucro percentual sobre o dinheiro que você gastou neste estoque vendido (30 dias)."><i class="fas fa-chart-line me-1"></i> ROI Retorno: <?= number_format($exec_health['roi'], 1) ?>% <i class="fas fa-circle-question opacity-50 small ms-1"></i></div>
-                        <p class="small mt-auto pt-3 mb-0 border-top border-secondary" style="color: #9ca3af;">Últimos 30 dias de vendas vs custo.</p>
+                        <div class="metric-value"><?= number_format($exec_health['margem_lucro'], 1) ?>%</div>
+                        <div class="trend-up mt-2" style="color: #34c759;"><i class="fas fa-arrow-up me-1"></i> ROI: <?= number_format($exec_health['roi'], 1) ?>%</div>
+                        <p class="small mt-auto pt-3 mb-0 border-top border-white border-opacity-10 text-muted" style="font-size: 0.75rem;">Rentabilidade dos últimos 30 dias.</p>
                     </div>
                 </a>
             </div>
 
             <!-- Inadimplência -->
             <div class="col-md-4">
-                <a href="../../financeiro/" class="clickable-card hover-lift" title="Ir para módulo Financeiro">
-                    <div class="exec-card" style="box-shadow: none; border-color: #f3f4f6; background-color: #fef2f2;">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="metric-label text-danger">Risco Financeiro</span>
-                            <i class="fas fa-triangle-exclamation text-danger bg-white p-2 rounded-circle shadow-sm"></i>
+                <a href="../modules/financeiro/views/dashboard.php" class="clickable-card">
+                    <div class="exec-card">
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="metric-label">Pendência Financeira</span>
+                            <i class="fas fa-triangle-exclamation text-danger opacity-40 fs-5"></i>
                         </div>
-                        <div class="metric-value mb-1 text-danger">R$ <?= number_format($fin_kpis['receivables']['overdue'], 2, ',', '.') ?></div>
-                        <p class="small text-danger fw-bold mb-3 opacity-75">Títulos Vencidos (Em Aberto)</p>
-                        <div class="mt-auto pt-3 border-top border-danger border-opacity-25 d-flex justify-content-between align-items-center">
-                            <span class="small fw-bold text-danger opacity-75">A Receber Total:</span>
-                            <span class="fw-bold text-danger">R$ <?= number_format($fin_kpis['receivables']['total_pending'], 2, ',', '.') ?></span>
+                        <div class="metric-value" style="color: #ff3b30;">R$ <?= number_format($fin_kpis['receivables']['overdue'], 2, ',', '.') ?></div>
+                        <div class="metric-label mb-3">Títulos Vencidos</div>
+                        <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                            <span class="metric-label">A Receber Total:</span>
+                            <span class="fw-bold text-dark">R$ <?= number_format($fin_kpis['receivables']['total_pending'], 2, ',', '.') ?></span>
                         </div>
                     </div>
                 </a>
@@ -161,96 +169,107 @@
         </div>
     </div>
 
-    <!-- SECTION 3: Motor de Crescimento (CRM) -->
-    <div class="mb-5 p-4 rounded-4" style="background-color: #f5f8ff; border: 1px dashed rgba(0, 64, 176, 0.2);">
-        <h5 class="fw-bold mb-4 d-flex align-items-center text-dark">
-            <span class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 1rem;">2</span>
-            Geração de Demanda e CRM
-        </h5>
-        <div class="row g-4 align-items-center">
-            <!-- Projetos Conversão -->
+    <!-- SECTION 3: CRM & Pipeline -->
+    <div class="mb-5">
+        <div class="row g-4 align-items-stretch">
             <div class="col-lg-4">
-                <a href="../../modules/crm/views/kanban.php" class="clickable-card hover-lift" title="Acessar Pipeline do CRM">
-                    <div class="exec-card border-0 bg-white shadow-sm">
-                        <div class="d-flex justify-content-between mb-3">
-                            <span class="metric-label">Taxa de Eficiência (Win-Rate)</span>
-                            <i class="fas fa-trophy text-warning bg-warning bg-opacity-10 p-2 rounded-circle"></i>
+                <a href="../modules/crm/views/kanban.php" class="clickable-card">
+                    <div class="exec-card">
+                        <div class="d-flex justify-content-between mb-4">
+                            <span class="metric-label">Taxa de Conversão</span>
+                            <i class="fas fa-trophy text-warning opacity-40 fs-5"></i>
                         </div>
-                        <div class="metric-value mb-1"><?= number_format($crm_projects['win_rate'], 1) ?>%</div>
-                        <p class="small text-muted fw-bold mb-3">Negócios Fechados com Sucesso</p>
+                        <div class="metric-value"><?= number_format($crm_projects['win_rate'], 1) ?>%</div>
+                        <div class="metric-label mb-3">Eficiência do Pipeline</div>
                         <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
-                            <span class="small fw-bold text-muted">Pipeline Total Ativo:</span>
+                            <span class="metric-label">Oportunidades Ativas:</span>
                             <span class="fw-bold text-primary">R$ <?= number_format($crm_kpis['deals_value'], 2, ',', '.') ?></span>
                         </div>
                     </div>
                 </a>
             </div>
             
-            <!-- Funnel Preview -->
             <div class="col-lg-8">
-                <a href="../../modules/crm/views/kanban.php" class="clickable-card text-decoration-none">
-                    <div class="exec-card border-0 bg-transparent p-0" style="box-shadow: none;">
-                        <div class="funnel-stage shadow-sm bg-white" style="border-left: 4px solid #9ca3af;">
-                            <span class="fw-bold text-muted"><i class="fas fa-search me-2"></i> 1. Prospecção (<?= $crm_projects['funil']['prospeccao']['qtd'] ?>)</span>
-                            <strong class="text-dark">R$ <?= number_format($crm_projects['funil']['prospeccao']['valor'], 0, ',', '.') ?></strong>
+                <div class="exec-card" style="background: rgba(0,0,0,0.01);">
+                    <div class="d-flex flex-column h-100">
+                        <div class="funnel-stage">
+                            <span class="fw-bold text-muted"><i class="fas fa-search me-2 opacity-50"></i> Prospecção (<?= $crm_projects['funil']['prospeccao']['qtd'] ?>)</span>
+                            <span class="fw-bold text-dark">R$ <?= number_format($crm_projects['funil']['prospeccao']['valor'], 0, ',', '.') ?></span>
                         </div>
-                        <div class="funnel-stage shadow-sm bg-white" style="width: 90%; margin: 0 auto 0.75rem auto; border-left: 4px solid var(--brand-blue);">
-                            <span class="fw-bold text-primary"><i class="fas fa-comments me-2"></i> 2. Negociação (<?= $crm_projects['funil']['negociacao']['qtd'] ?>)</span>
-                            <strong class="text-primary">R$ <?= number_format($crm_projects['funil']['negociacao']['valor'], 0, ',', '.') ?></strong>
+                        <div class="funnel-stage" style="width: 95%; margin-left: auto; margin-right: auto; background: rgba(0, 122, 255, 0.05);">
+                            <span class="fw-bold text-primary"><i class="fas fa-comments me-2 opacity-50"></i> Negociação (<?= $crm_projects['funil']['negociacao']['qtd'] ?>)</span>
+                            <span class="fw-bold text-primary">R$ <?= number_format($crm_projects['funil']['negociacao']['valor'], 0, ',', '.') ?></span>
                         </div>
-                        <div class="funnel-stage shadow-sm bg-success-subtle" style="width: 80%; margin: 0 auto; border-left: 4px solid var(--brand-green);">
-                            <span class="fw-bold text-success"><i class="fas fa-check-double me-2"></i> 3. Fechados / Ganhos (<?= $crm_projects['funil']['ganho']['qtd'] ?>)</span>
-                            <strong class="text-success">R$ <?= number_format($crm_projects['funil']['ganho']['valor'], 0, ',', '.') ?></strong>
+                        <div class="funnel-stage mb-0" style="width: 90%; margin-left: auto; margin-right: auto; background: rgba(44, 120, 101, 0.08);">
+                            <span class="fw-bold text-success"><i class="fas fa-check-double me-2 opacity-50"></i> Fechados (<?= $crm_projects['funil']['ganho']['qtd'] ?>)</span>
+                            <span class="fw-bold text-success">R$ <?= number_format($crm_projects['funil']['ganho']['valor'], 0, ',', '.') ?></span>
                         </div>
                     </div>
-                </a>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- SECTION 4: Relatório Analítico e Operações -->
     <div class="mb-4">
-        <h5 class="fw-bold mb-4 d-flex align-items-center text-dark">
-            <span class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px; font-size: 1rem;">3</span>
-            Histórico P&L e Logística
-        </h5>
         <div class="row g-4">
             <!-- Main Chart -->
             <div class="col-lg-8">
-                <div class="exec-card p-4 shadow-sm border-0">
-                    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <div class="exec-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h6 class="fw-bold text-dark mb-0">Evolução do P&L (Lucros & Perdas)</h6>
-                            <p class="text-muted small mb-0">Cruza receitas vs custos e desenha o lucro histórico no ano</p>
+                            <h6 class="fw-bold text-dark mb-0">Receita & Crescimento</h6>
+                            <p class="text-muted small mb-0">Monitoramento analítico de vendas e lucratividade.</p>
                         </div>
                     </div>
                     <div style="height: 380px;"><canvas id="salesChart"></canvas></div>
                 </div>
             </div>
 
-            <!-- Logistics -->
-            <div class="col-lg-4">
-                <a href="../registrar_compra.php" class="clickable-card hover-lift" title="Verificar pendências de compras e recepção">
-                    <div class="exec-card border-0 shadow-sm bg-success-subtle">
-                        <h6 class="fw-bold border-bottom border-success border-opacity-25 pb-3 mb-4 text-success"><i class="fas fa-truck-fast me-2"></i>Logística & Entregas</h6>
-                        
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between small fw-bold mb-2">
-                                <span class="text-success">Nível de Serviço (Fulfillment)</span> 
-                                <span class="text-success fs-5"><?= $operacoes['fulfillment_rate'] ?>%</span>
+            <!-- Operacional & Logistics -->
+            <div class="col-lg-4 d-flex flex-column gap-4">
+                
+                <!-- Capital Humano Access Card -->
+                <a href="../modules/rh/views/index.php" class="clickable-card title="Gerenciar Equipe">
+                    <div class="exec-card py-4">
+                        <div class="d-flex justify-content-between align-items-center mb-0">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Capital Humano</h6>
+                                <p class="text-muted small mb-0">Operadores ativos no sistema.</p>
                             </div>
-                            <div class="progress-track bg-white"><div class="progress-fill bg-gradient-success" style="width: <?= $operacoes['fulfillment_rate'] ?>%"></div></div>
-                            <p class="text-muted small mt-2" style="color: #166534 !important;">Capacidade da empresa de entregar pedidos no prazo.</p>
+                            <div class="text-primary opacity-20">
+                                <i class="fas fa-users-gear fs-2"></i>
+                            </div>
+                        </div>
+                        <div class="mt-auto d-flex align-items-end gap-2">
+                            <span class="display-5 fw-bold text-dark lh-1"><?= $active_employees_count ?></span>
+                            <span class="metric-label fw-bold mb-1">Colaboradores</span>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- Relatório Logística -->
+                <a href="registrar_compra.php" class="clickable-card" title="Logística">
+                    <div class="exec-card py-4" style="background: rgba(44, 120, 101, 0.05);">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                             <h6 class="fw-bold text-success mb-0">Logística</h6>
+                             <i class="fas fa-truck-fast text-success opacity-30 fs-4"></i>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between small fw-bold mb-2">
+                                <span class="text-success small opacity-75">Nível de Serviço</span> 
+                                <span class="text-success"><?= $operacoes['fulfillment_rate'] ?>%</span>
+                            </div>
+                            <div class="progress-track" style="background: rgba(255,255,255,0.4);"><div class="progress-fill" style="width: <?= $operacoes['fulfillment_rate'] ?>%; background: #2C7865;"></div></div>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center p-4 bg-white rounded-4 shadow-sm mt-auto">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-white rounded-4 shadow-sm mt-auto">
                             <div>
-                                <div class="small fw-bold text-muted mb-1">Compras na Recepção</div>
-                                <div class="h3 fw-bold mb-0 text-dark"><?= $operacoes['compras_pendentes'] ?> Lote(s)</div>
+                                <div class="small fw-bold text-muted" style="font-size: 0.7rem;">Cargas na Recepção</div>
+                                <div class="h4 fw-bold mb-0 text-dark"><?= $operacoes['compras_pendentes'] ?> Lote(s)</div>
                             </div>
-                            <div class="rounded-circle p-3 <?= $operacoes['compras_pendentes'] > 0 ? 'bg-warning bg-opacity-10 text-warning' : 'bg-success bg-opacity-10 text-success' ?>">
-                                <i class="fas <?= $operacoes['compras_pendentes'] > 0 ? 'fa-box-open' : 'fa-check-double' ?> fa-2x"></i>
-                            </div>
+                            <i class="fas <?= $operacoes['compras_pendentes'] > 0 ? 'fa-box-open text-warning' : 'fa-check text-success' ?> fs-3 opacity-50"></i>
                         </div>
                     </div>
                 </a>
@@ -270,59 +289,67 @@
         function initChart(labels, salesData, costData, profitData) {
             if (salesChart) salesChart.destroy();
             
-            const fillGradient = ctx.createLinearGradient(0, 0, 0, 400);
-            fillGradient.addColorStop(0, 'rgba(0, 64, 176, 0.15)');
-            fillGradient.addColorStop(1, 'rgba(0, 64, 176, 0)');
+            const salesGradient = ctx.createLinearGradient(0, 0, 0, 400);
+            salesGradient.addColorStop(0, 'rgba(10, 38, 71, 0.1)');
+            salesGradient.addColorStop(1, 'rgba(10, 38, 71, 0)');
 
             salesChart = new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: labels,
                     datasets: [
                         {
-                            type: 'line',
-                            label: 'Lucro (R$)',
-                            data: profitData,
-                            borderColor: '#10b981', /* M3 Green */
+                            label: 'Receita',
+                            data: salesData,
+                            borderColor: '#0A2647',
+                            backgroundColor: salesGradient,
                             borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#0A2647',
+                            pointHoverBorderColor: '#fff',
+                            pointHoverBorderWidth: 2
+                        },
+                        {
+                            label: 'Lucro',
+                            data: profitData,
+                            borderColor: '#2C7865',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
                             fill: false,
                             tension: 0.4,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#fff',
-                            pointBorderWidth: 2,
-                            yAxisID: 'y'
-                        },
-                        {
-                            type: 'bar',
-                            label: 'Receita (R$)',
-                            data: salesData,
-                            backgroundColor: '#2563eb', /* Generic Blue */
-                            borderRadius: 6,
-                            barPercentage: 0.6,
-                            yAxisID: 'y'
-                        },
-                        {
-                            type: 'bar',
-                            label: 'Custos (R$)',
-                            data: costData,
-                            backgroundColor: '#e5e7eb',
-                            borderRadius: 6,
-                            barPercentage: 0.6,
-                            yAxisID: 'y'
+                            pointRadius: 0
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
                     plugins: {
-                        legend: { position: 'top', align: 'end', labels: { boxWidth: 12, usePointStyle: true, font: { weight: '600', family: 'Inter' } } },
-                        tooltip: { backgroundColor: '#121212', padding: 12, borderRadius: 8, titleFont: { size: 14, family: 'Inter' } }
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(29, 29, 31, 0.9)',
+                            padding: 12,
+                            cornerRadius: 10,
+                            titleFont: { size: 13, weight: '600' },
+                            bodyFont: { size: 13 },
+                            displayColors: false
+                        }
                     },
                     scales: {
-                        y: { grid: { color: '#f3f4f6', drawBorder: false }, ticks: { font: {family: 'Inter'}, callback: v => 'R$ ' + (v/1000).toFixed(0) + 'k' } },
-                        x: { grid: { display: false }, ticks: { font: {family: 'Inter', weight: 'bold'} } }
+                        y: { 
+                            display: false,
+                            grid: { display: false }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { 
+                                color: '#86868b',
+                                font: { size: 11, weight: '500' }
+                            }
+                        }
                     }
                 }
             });

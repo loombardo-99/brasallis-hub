@@ -1,12 +1,12 @@
-# Apresentação de Vendas: Gestor de Estoque Inteligente
+# Apresentação de Vendas: Brasallis - Gestor de Estoque Inteligente
 
 ---
 
 ## Slide 1: Título
 
-**Gestor de Estoque Inteligente**
+**Brasallis**
 
-**Transforme seu controle de estoque com automação e inteligência artificial.**
+**Transforme seu controle de estoque com Inteligência Operacional.**
 
 *Simplifique operações, reduza custos e tome decisões baseadas em dados.*
 
@@ -25,7 +25,7 @@
 
 ## Slide 3: A Solução
 
-**Apresentamos o Gestor de Estoque Inteligente: a plataforma centralizada para o controle total do seu negócio.**
+**Apresentamos o Brasallis: a plataforma inteligente para o controle total do seu negócio.**
 
 Nosso sistema automatiza suas operações de estoque, desde a compra até a venda, fornecendo a clareza que você precisa para crescer.
 
@@ -67,7 +67,7 @@ Nosso sistema automatiza suas operações de estoque, desde a compra até a vend
 
 ## Slide 7: Para Quem é a Solução?
 
-Nosso sistema é ideal para **pequenas e médias empresas** que buscam profissionalizar sua gestão de estoque:
+**Brasallis** é ideal para **pequenas e médias empresas** que buscam profissionalizar sua gestão de estoque:
 
 *   **Varejistas:** Lojas, mercados, boutiques.
 *   **Distribuidores:** Pequenos e médios centros de distribuição.
@@ -87,7 +87,7 @@ Nosso sistema é ideal para **pequenas e médias empresas** que buscam profissio
 
 ---
 
-## Slide 9: Por que nos escolher?
+## Slide 9: Por que o Brasallis?
 
 *   **Inovação:** Somos um dos únicos sistemas do mercado com extração de dados de notas fiscais via IA, focado em PMEs.
 *   **Custo-Benefício:** Oferecemos funcionalidades de sistemas caros por um preço acessível.
@@ -100,10 +100,10 @@ Nosso sistema é ideal para **pequenas e médias empresas** que buscam profissio
 
 **Pronto para transformar a gestão do seu estoque?**
 
-*   **Agende uma demonstração personalizada:** Vamos entender suas necessidades e mostrar como nosso sistema pode te ajudar.
+*   **Agende uma demonstração personalizada:** Vamos entender suas necessidades e mostrar como o Brasallis pode te ajudar.
 *   **Inicie um teste gratuito (Trial):** Experimente a plataforma por 14 dias e veja os resultados por si mesmo.
 *   **Contato:**
     *   **Email:** `jr.lombardo@hotmail.com`
-    *   **Website:** `www.gestorinteligente.com`
+    *   **Website:** `www.brasallis.com.br`
 
-**Gestor de Estoque Inteligente. A decisão inteligente para o seu negócio.**
+**Brasallis. A decisão inteligente para o seu negócio.**

@@ -82,7 +82,7 @@ def get_structured_prompt():
 
 def process_with_gemini(image_object, api_key):
     """ Processa um objeto de imagem Pillow usando a API do Google Gemini e retorna tanto os dados processados quanto a resposta bruta. """
-    print("Processando com Gemini...")
+    # print("Processando com Gemini...")
     try:
         genai.configure(api_key=api_key)
         model = genai.GenerativeModel('models/gemini-flash-latest')
@@ -149,7 +149,8 @@ def update_db(db_config, compra_id, status, extracted_data=None, raw_response=No
             cnx.close()
 
 def main(args):
-    print(f"Processamento real iniciado para a compra ID: {args.compra_id}")
+    if not args.preview:
+        print(f"Processamento real iniciado para a compra ID: {args.compra_id}")
     
     # Obter credenciais e chave de API das variáveis de ambiente
     db_host = os.environ.get('DB_HOST')

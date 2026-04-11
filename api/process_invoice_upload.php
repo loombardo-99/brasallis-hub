@@ -41,8 +41,8 @@ if (!move_uploaded_file($_FILES['file']['tmp_name'], $dest_path)) {
     exit;
 }
 
-// Configurar execução do Python no Docker (Linux)
-$python_executable = 'python3'; 
+// Configurar execução do Python nativo com suporte cros-platform
+$python_executable = (PHP_OS_FAMILY === 'Windows') ? 'py' : 'python3';
 $gemini_api_key = GEMINI_API_KEY;
 $script_path = realpath(__DIR__ . '/../scripts/process_invoice.py');
 $absolute_file_path = realpath($dest_path);
@@ -65,6 +65,7 @@ $env = [
     'DB_PASS' => DB_PASS,
     'DB_NAME' => DB_NAME,
     'GEMINI_API_KEY' => $gemini_api_key,
+    'PYTHONIOENCODING' => 'utf-8',
     'SystemRoot' => $_SERVER['SystemRoot'] ?? '',
     'PATH' => $_SERVER['PATH'] ?? ''
 ];
@@ -86,15 +87,20 @@ if (is_resource($process)) {
     $return_value = proc_close($process);
 
     if ($return_value === 0) {
-        // Tentar decodificar o JSON retornado pelo Python
-        $json_data = json_decode($stdout, true);
+        // Isolar o conteúdo JSON usando Expressão Regular para evitar lixo de stdout (Warnings do Python/PIP)
+        preg_match('/\{.*\}/s', $stdout, $matches);
+        $clean_json = $matches[0] ?? $stdout;
+
+        $json_data = json_decode($clean_json, true);
         if ($json_data) {
+            file_put_contents('../logs/ai_success.log', $clean_json);
             echo json_encode([
                 'success' => true,
                 'data' => $json_data,
                 'temp_file' => 'uploads/temp/' . $new_file_name // Retorna caminho relativo para uso posterior
             ]);
         } else {
+            file_put_contents('../logs/ai_debug.log', "RAW STDOUT: " . $stdout . "\n\nCLEAN: " . $clean_json . "\n\nSTDERR: " . $stderr);
             echo json_encode(['error' => 'Falha ao decodificar resposta da IA.', 'raw_output' => $stdout, 'stderr' => $stderr]);
         }
     } else {

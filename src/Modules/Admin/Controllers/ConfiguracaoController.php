@@ -22,12 +22,15 @@ class ConfiguracaoController
 
     public function update(Request $request, Response $response): void
     {
+        if (session_status() === PHP_SESSION_NONE) session_start();
         $data = $request->all();
         try {
             $this->repo->update($data);
-            $response->redirect('/admin/configuracoes', ['success' => 'Configurações atualizadas com sucesso!']);
+            $_SESSION['success'] = 'Configurações atualizadas com sucesso!';
+            $response->redirect('/admin/configuracoes.php');
         } catch (Exception $e) {
-            $response->redirect('/admin/configuracoes', ['error' => 'Erro ao atualizar: ' . $e->getMessage()]);
+            $_SESSION['error'] = 'Erro ao atualizar: ' . $e->getMessage();
+            $response->redirect('/admin/configuracoes.php');
         }
     }
 }

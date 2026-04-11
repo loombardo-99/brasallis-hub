@@ -1,42 +1,68 @@
-# Arquivos de configuração local. NUNCA comite chaves de API!
-/includes/config.php
+# BRASALLIS HUB - GIT IGNORE (Security First)
 
-# Dependências de gerenciadores de pacotes
+# Configuração e Segredos
+.env
+.env.*
+!.env.example
+/includes/config.local.php
+/config/*.local.php
+session_data/
+
+# Dependências
 /vendor/
 /node_modules/
+package-lock.json
+composer.lock
 
-# Arquivos de ambiente
-.env
-.env.local
-.env.*
+# Logs e Cache
+/logs/*.log
+*.log
+*.cache
+.phpunit.result.cache
 
 # Base de Dados & Dumps (Segurança Crítica)
-*.sql
-*.json
 /database/data/
+*.sql
+*.sql.sql
+*.db
+*.sqlite
+/database/*.sql
 db_structure.json
 
-# Logs e Diagnósticos
-*.log
-*.txt
+# Resíduos de Debug e Testes
 debug_*.php
 check_*.php
-full_scan.php
-rendered_output.html
 test_*.php
-diagnostico_db.php
- full_scan.php
+temp_*.php
+tmp_*.php
+full_scan.php
 multi_scan.php
-reparar_financeiro.php
-reproduce_nav.php
-reset_super_admin.php
-setup_db_customization.php
-v2_fiscal_migration.php
-verificar_codigo.php
+*.txt
+*.html
+!README.md
+!composer.json
 
-# Diretórios de sistema operacional
+# Uploads e Arquivos de Usuário
+/uploads/
+/public/uploads/
+*.pdf
+*.jpg
+*.png
+!assets/img/*.png
+!assets/img/*.jpg
+!assets/img/*.svg
+
+# Sistema Operacional
 .DS_Store
 Thumbs.db
+.idea/
+.vscode/
 
-# Docker Data & Uploads
-/uploads/
+# Build & Deploy
+/dist/
+/build/
+deploy.bat
+Procfile
+Dockerfile
+docker-compose.yml
+docker-compose.prod.yml

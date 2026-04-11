@@ -688,10 +688,10 @@ require_once __DIR__ . '/../includes/header.php';
         <div data-aos="fade-up">
             <span class="hero-tag">Simplicidade & Performance</span>
             <h1 class="hero-h1-clean">
-                A Gestão que Escala <br>com sua <span style="color:var(--u-brand-blue);">Ambição.</span>
+                O Próximo Nível da <br><span style="color:var(--u-brand-blue);">Inteligência Operacional.</span>
             </h1>
             <p class="hero-p-clean">
-                A plataforma definitiva para empresas que buscam automação inteligente com ruído zero. Uma interface robusta, intuitiva e focada na sua escala acelerada.
+                A plataforma definitiva para empresas que buscam automação inteligente e controle total em tempo real com a robustez do ecossistema Brasallis.
             </p>
             <div class="d-flex justify-content-center gap-4">
                 <a href="/register.php" class="u-btn-primary py-3 px-5 fs-6" style="border-radius: 12px;">Iniciar Teste Grátis</a>
@@ -710,7 +710,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="container">
         <div class="text-center mb-5" data-aos="fade-up">
             <span class="hero-tag">Tudo o que você precisa</span>
-            <h2 class="display-5 fw-bold text-dark">Acelerando o seu <br>Crescimento <span style="color:var(--u-wa-green);">Digital.</span></h2>
+            <h2 class="display-5 fw-bold text-dark">Potencializando sua <br>Automação <span style="color:var(--u-wa-green);">Inteligente.</span></h2>
         </div>
 
         <div class="solutions-grid">

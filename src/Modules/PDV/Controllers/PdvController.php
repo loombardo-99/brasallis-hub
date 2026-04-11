@@ -27,15 +27,35 @@ class PdvController
     {
         $data = $request->json();
         $items = $data['items'] ?? [];
-        $paymentMethod = $data['payment_method'] ?? 'dinheiro';
+        
+        // Suporte para múltiplos pagamentos (novo padrão)
+        $payments = $data['payments'] ?? [];
+        
+        // Fallback p/ o modelo antigo se mandarem request legacy (1 método só)
+        if (empty($payments) && !empty($data['payment_method'])) {
+            // Se for request antigo total, calculamos o total de itens p/ jogar no valor:
+            $totalLegacy = 0;
+            foreach ($items as $it) {
+                $totalLegacy += ((float)($it['qty'] ?? 1)) * ((float)($it['price'] ?? 0));
+            }
+            $payments[] = [
+                'method' => $data['payment_method'],
+                'value'  => $totalLegacy
+            ];
+        }
 
         if (empty($items)) {
             $response->json(['success' => false, 'error' => 'Carrinho vazio.'], 400);
             return;
         }
+        
+        if (empty($payments)) {
+            $response->json(['success' => false, 'error' => 'Forma de pagamento não informada.'], 400);
+            return;
+        }
 
         try {
-            $vendaId = $this->service->finalizarVenda($items, $paymentMethod);
+            $vendaId = $this->service->finalizarVenda($items, $payments);
             $response->json([
                 'success' => true, 
                 'venda_id' => $vendaId, 
