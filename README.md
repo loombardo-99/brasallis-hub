@@ -1,83 +1,123 @@
-# 🍎 Brasallis Hub 360 - Apple Pure Edition
+# 🍏 Brasallis Hub 360 - Developer Edition
 
-![Brasallis Hub](https://img.shields.io/badge/UI-Apple%20Pure-blue?style=for-the-badge&logo=apple)
-![Status](https://img.shields.io/badge/Status-Production%20Ready-success?style=for-the-badge)
+![Brasallis UI](https://img.shields.io/badge/UI-Apple%20Pure-blue?style=for-the-badge&logo=apple)
+![Stack](https://img.shields.io/badge/Stack-PHP%208%2B%20%7C%20MySQL%20%7C%20IA-orange?style=for-the-badge)
+![Clean Code](https://img.shields.io/badge/Architecture-Service--Repository-green?style=for-the-badge)
 
-Uma plataforma ERP SaaS de próxima geração, focada em simplicidade, fluidez e inteligência. O **Brasallis Hub** redefine a gestão empresarial com uma interface minimalista inspirada no ecossistema Apple, unindo **Glassmorphism**, física tátil e automação por IA.
-
----
-
-## ✨ A Experiência "Apple Pure"
-
-O Brasallis Hub não é apenas um ERP; é uma ferramenta de produtividade refinada. 
-
-- **Interface Solar**: Navegação translúcida com `backdrop-filter` de alta densidade.
-- **Física Hática**: Transições e botões com resposta física (Spring Physics) no hover e clique.
-- **Hierarquia Visual**: Foco total no conteúdo, eliminando bordas pesadas e fadiga visual.
-- **Smart Hover**: Menus que reagem à intenção do usuário com expansão fluida.
+Bem-vindo ao **Brasallis Hub**, uma plataforma de gestão empresarial (ERP) SaaS de alta performance. Este documento foi projetado especificamente para **colaboradores e desenvolvedores** que desejam manter a excelência técnica e estética do ecossistema Brasallis.
 
 ---
 
-## 🚀 Módulos Inteligentes
+## 🏛️ Arquitetura e Fluxo de Dados
 
-### 📦 Gestão de Estoque & Catálogo
-- **Inventory Library**: Visão tipo "App Store" dos seus ativos.
-- **Apple Table Airy**: Tabelas com espaçamento dinâmico e tipografia Inter de alta legibilidade.
-- **Controle de Lotes**: Rastreabilidade total com alertas de validade integrados.
+O sistema utiliza uma arquitetura desacoplada baseada no padrão **Service-Repository**, garantindo que a lógica de negócio seja independente do meio de persistência.
 
-### 🤖 Inteligência Artificial (Inovação)
-- **Extrator de Notas Fiscais**: Processamento inteligente de PDFs/Imagens para entrada automática de mercadorias.
-- **Chat Agent**: Assistente virtual integrado para análise rápida de métricas.
+```mermaid
+graph TD
+    User((Usuário)) --> View[Views / UI Apple Pure]
+    View --> Controller[Controllers / API]
+    Controller --> Service[Services / Business Logic]
+    Service --> Repository[Repositories / Data Access]
+    Repository --> DB[(Database / MySQL)]
+    
+    subgraph "Core Engine"
+    Service
+    Repository
+    end
+    
+    subgraph "UI Layer"
+    View
+    Controller
+    end
+```
 
-### 📊 Dashboard Executivo
-- **Cartões de Performance**: Métricas críticas em painéis Glassmorphism de alto contraste.
-- **Gráficos Curvos**: Visualização de tendências com suavização de Bezier (Chart.js).
+### Camadas Principais:
+- **Core**: Contém o motor do sistema, gerenciamento de sessões e roteamento básico.
+- **Modules**: Onde a mágica acontece. Cada funcionalidade (Estoque, Financeiro, RH) reside aqui.
+- **Services**: Responsáveis por validações complexas e orquestração de processos.
+- **Repositories**: Única camada com autorização para ler/escrever no banco de dados.
 
 ---
 
-## 🛠️ Stack Tecnológica
+## 🛠️ Onboarding: Configurando o Ambiente
 
-- **Core**: PHP 7.4+ / MySQL (MariaDB)
-- **Frontend**: Vanilla JS (ES6+), Modern CSS (Variables, Flexbox, Grid)
-- **IA/Scripts**: Python 3.10+
-- **DevOps**: Docker & Docker Compose Ready
+Para garantir a paridade entre ambientes, recomendamos fortemente o uso do **Docker**.
 
----
-
-## ⚙️ Guia de Instalação Rápida
-
-### 🐳 Via Docker (Recomendado)
-
-O projeto está configurado para subir um ambiente completo (Web + DB + Admin) em segundos.
-
-1. Clone o repositório: `git clone ...`
-2. Na raiz do projeto, execute:
+### Opção 1: Via Docker (Preferencial)
+1. **Clone & Install**:
+   ```bash
+   git clone https://github.com/loombardo-99/erp-wiseflow.git
+   cd erp-wiseflow
+   ```
+2. **Environment**:
+   Copie o arquivo de exemplo e ajuste se necessário (o padrão Docker já funciona out-of-the-box):
+   ```bash
+   cp .env.example .env
+   ```
+3. **Up**:
    ```bash
    docker-compose up -d
    ```
-3. Acesse: **`http://localhost:8001`**
-4. Gerenciamento do Banco: `http://localhost:8080`
+4. **Dependências**:
+   ```bash
+   docker exec -it brasallis-server composer install
+   ```
+5. **Acesso**: `http://localhost:8001`
 
-### 💻 Instalação Manual
-
-1. Configure um servidor Apache/Nginx com PHP 7.4+.
-2. Certifique-se de que o **MySQL** está rodando.
-3. Copie `includes/config.php` e crie um arquivo local para suas credenciais se necessário.
-4. Importe os esquemas localizados no diretório `/sql`.
-
----
-
-## 🔒 Segurança e Privacidade
-
-Este repositório foi **sanetizado** para subida pública. 
-- Credenciais locais e dumps de banco de dados são ignorados via `.gitignore`.
-- Chaves de API de terceiros (Gemini/OpenAI) devem ser configuradas via variáveis de ambiente ou no arquivo `includes/config.local.php` (não incluído no repositório).
+### Opção 2: Localhost (XAMPP/WAMP)
+- **PHP**: Mínimo 8.0.
+- **Extensões**: PDO MySQL, OpenSSL, CURL.
+- **Database**: Crie um banco `gerenciador_estoque` e utilize o script `configurar_banco_dados.php` para o setup inicial.
+- **Composer**: Execute `composer install` para registrar o Autoloader PSR-4.
 
 ---
 
-## 📄 Licença
+## 🎨 Manual de Estilo Brasallis (Identity)
 
-Este projeto é de uso restrito conforme as diretrizes da **Brasallis Solutions**.
+A identidade visual Brasallis baseia-se no princípio **Apple Pure**: interfaces que não parecem software, mas sim ferramentas nativas e fluidas.
+
+### 1. Tokens de Design
+| Elemento | Valor / Token | Descrição |
+| :--- | :--- | :--- |
+| **Primary Color** | `#2563eb` | Azul Brasallis (Confiança e Tecnologia) |
+| **Surface** | `#ffffff` | Branco Sólido ou Glassmorphism (Transparência) |
+| **Font Family** | `'Outfit', sans-serif` | Tipografia geométrica moderna |
+| **Border Radius** | `8px` a `28px` | Cantos suaves (estilo iOS Sheets) |
+| **Tracking** | `-0.15px` | Espaçamento de letra condensado (estilo Apple UI) |
+
+### 2. UI Physics (Animação)
+Novos componentes devem evitar transições lineares. Use sempre:
+- **Cubic Bezier**: `transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);`
+- **Hover Scale**: No hover de botões/cards, aplique `scale(1.02)` com física de mola.
+
+### 3. Hierarquia de Informação
+- **Negative Space**: Priorize o espaço em branco. Se a tela parecer "cheia", ela não é Brasallis.
+- **Micro-interações**: Badges de status devem ser sutis, sem bordas ou sombras pesadas.
 
 ---
-*Desenvolvido com ❤️ pelo time de Advanced Engineering.*
+
+## 🗺️ Mapa do Projeto para Colaboradores
+
+```text
+/admin       -> Views administrativas (Padrão Legado em transição)
+/api         -> Endpoints AJAX e integrações externas
+/assets      -> Core CSS (brasallis-hub.css) e JS utilitários
+/config      -> Arquivos de configuração de sistema e rotas
+/docs        -> Manuais de treinamento e marketing
+/includes    -> Componentes reutilizáveis (Header, Footer, Nav)
+/modules     -> NÚCLEO: Implementações das novas funcionalidades
+/src         -> Classes PHP (PSR-4): Services e Repositories
+/views       -> Páginas modernas renderizadas pelo Controller
+```
+
+---
+
+## 🤝 Como Contribuir
+
+1. **Crie uma Feature Branch**: `git checkout -b feature/nome-da-melhoria`.
+2. **Respeite o Design System**: Utilize as classes do `brasallis-hub.css` sempre que possível.
+3. **Sem Hardcoding**: Use o sistema de configuração `.env` para chaves e URLs.
+4. **Commits Padronizados**: Preferencialmente use o prefixo `feat:`, `fix:`, `refactor:` ou `docs:`.
+
+---
+*Este sistema é o coração operacional da Brasallis. Desenvolva-o com paixão pela simplicidade.*
